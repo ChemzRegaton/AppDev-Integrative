@@ -1,0 +1,238 @@
+
+
+.dashboard {
+    width: 100%;
+    height: 100vh;
+    background-color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-left: 250px;
+    color: black;
+    padding: 20px;
+}
+
+section {
+    width: 50%;
+    height: 90vh;
+    margin: 1px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+input {
+    background-color: white;
+    width: 100%;
+    height: 12%;
+    border-radius: 15px;
+    box-sizing: border-box;
+    min-width: 500px;
+    padding: 2px;
+    margin: 10px;
+    color: black;
+    font-size: medium;
+}
+
+button {
+    background-color: #FAA61A;
+    color: black;
+    margin: 10px;
+    min-width: 150px;
+    font-style: bold;
+}
+
+.searchBooks {
+    width: 100%;
+    height: 7vh;
+    display: flex;
+    flex-direction: row;
+    align-content: start;
+    padding: 5px;
+    gap: 20px;
+}
+
+.searchBar {
+    background-color: rgb(255, 255, 255);
+    width: 50%;
+    height: inherit;
+    box-shadow: 2px 4px 6px rgba(0, 0, 0, 1);
+    border-radius: 10px;
+    border: 0px;
+}
+
+.categoryBar {
+    background-color: rgb(255, 255, 255);
+    width: 30%;
+    height: inherit;
+    box-shadow: 2px 4px 6px rgba(0, 0, 0, 1);
+    border-radius: 10px;
+    border: 0px;
+}
+
+.totalBooks {
+    width: 20%;
+    height: inherit;
+    display: inline;
+    gap: 10px;
+    margin-top: -40px;
+}
+
+.actions {
+    width: 15%;
+    height: 10vh;
+    align-self: flex-start;
+    
+}
+
+.btn {
+    align-content: flex-start;
+    justify-items: left;
+}
+
+.booksTable {
+    padding: 20px;
+    overflow-y: auto;
+    width: 95%;
+    height: 70vh;
+    box-shadow: 2px 4px 6px rgba(0, 0, 0, 1);
+    border-radius: 10px;
+    gap: 40px;
+    text-align: left;
+    display: block;
+}
+
+.booksTable table {
+    width: 90%;
+    max-width: 90%;
+    border-collapse: collapse;
+    table-layout: fixed; /* Force fixed layout */
+    overflow-y: auto ;
+}
+
+
+.booksTable td {
+    border-bottom: #000000;
+    text-align: left;
+    font-size: 0.8em;
+    overflow-wrap: break-word; /* Allow wrapping */
+    word-break: break-word; /* For older browsers */
+}
+
+.booksTable th {
+    text-align: left;
+    font-size: 0.8em;
+    overflow-wrap: break-word; /* Allow wrapping */
+    word-break: break-word; /* For older browsers */
+    position: sticky; /* Make the header sticky */
+    top: 0; /* Stick to the top of its containing block */
+    background-color: white; /* Ensure the header covers the scrolling content */
+    z-index: 1; /* Ensure the header stays on top of the content */
+}
+
+.booksTable th:not(:last-child),
+.booksTable td:not(:last-child) {
+    padding-right: 25px;
+}
+
+/* Column widths */
+.booksTable th:nth-child(1),
+.booksTable td:nth-child(1) {
+    width: 8%; /* Book ID */
+    white-space: nowrap; /* Prevent wrapping */
+}
+
+.booksTable th:nth-child(2),
+.booksTable td:nth-child(2) {
+    width: 10%; /* Title */
+    white-space: wrap;
+}
+
+.booksTable th:nth-child(3),
+.booksTable td:nth-child(3) {
+    width: 15%; /* Author */
+}
+
+.booksTable th:nth-child(4),
+.booksTable td:nth-child(4) {
+    width: 10%; /* Yr. Published */
+    white-space: nowrap; /* Prevent wrapping */
+}
+
+.booksTable th:nth-child(5),
+.booksTable td:nth-child(5) {
+    width: 15%; /* Publisher */
+}
+
+.booksTable th:nth-child(6),
+.booksTable td:nth-child(6) {
+    width: 12%; /* Category */
+}
+
+.booksTable th:nth-child(7),
+.booksTable td:nth-child(7) {
+    width: 10%; /* Date Added */
+    white-space: nowrap; /* Prevent wrapping */
+}
+
+.booksTable th:nth-child(8),
+.booksTable td:nth-child(8) {
+    width: 10%; /* Quantity */
+    /* white-space: normal; /* Allow wrapping for header */
+    text-align: center; /* Center the content if wrapped */
+}
+
+.booksTable th:nth-child(9),
+.booksTable td:nth-child(9) {
+    width: 8%; /* Available */
+    /* white-space: normal; /* Allow wrapping for header */
+    text-align: center; /* Center the content if wrapped */
+}
+
+.booksTable th:nth-child(10),
+.booksTable td:nth-child(10) {
+    width: 5%; /* Location */
+    white-space: nowrap; /* Prevent wrapping */
+}
+
+.booksTable th:nth-child(11),
+.booksTable td:nth-child(11) {
+    text-align: center;
+    width: 8%; /* Actions */
+    white-space: nowrap; /* Prevent wrapping */
+}
+
+.error {
+    color: red;
+    margin-top: 10px;
+}
+
+.booksTable tbody tr td button {
+    padding: 5px 8px;
+    font-size: 0.7em;
+    max-width: 80%;
+    height: auto;
+    line-height: 1;
+    margin: 0px;
+}
+
+.booksTable tbody tr td {
+    padding: 8px 10px;
+}
+
+.booksTable .edit-btn,
+.booksTable .delete-btn {
+    padding: 5px 8px;
+    font-size: 0.7em;
+    min-width: 30px;
+    height: auto;
+    line-height: 1;
+    margin: 2px;
+}
+
+.booksTable tbody tr:hover {
+    background-color: #f1c16f; /* Light blue or any color you prefer */
+    cursor: pointer; /* Optional: Change cursor to indicate interactivity */
+}

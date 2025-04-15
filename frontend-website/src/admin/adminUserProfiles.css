@@ -1,0 +1,101 @@
+
+
+.Filter {
+    background-color: #ffffff;
+    height: 20vh;
+    display: flex;
+    flex-direction: row;
+}
+
+.searchBox {
+    height: 8vh;
+    width: 70%;
+    background-color: #ffffff;
+    box-shadow: 2px 4px 6px rgba(0, 0, 0, 1);
+    border-radius: 10px;
+   
+}
+
+
+.totalUsers {
+    width: 20%;
+    min-height: 5vh;
+    background-color: #ffffff;
+    height: inherit;
+    display: inline;
+    gap: 10px;
+    margin-top: 10px;
+    margin-left: 40px;
+}
+
+.usersTable {
+    padding: 20px;
+    overflow-y: auto;
+    min-width:95%;
+    height: 200vh;
+    box-shadow: 2px 4px 6px rgba(0, 0, 0, 1);
+    border-radius: 10px;
+    gap: 40px;
+    text-align: left;
+    display: block;
+}
+
+.usersTable table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.usersTable th, .usersTable td {
+    border-bottom: 1px solid #ffffff;
+    padding: 4px;
+    text-align: left;
+    font-size: 0.8em;
+    overflow-wrap: break-word;
+    
+}
+
+.usersTable th {
+    background-color: #ffffff;
+    position: sticky;
+    min-width: 20%;
+    top: 0;
+    z-index: 1;
+}   
+
+.error {
+    color: red;
+    margin-top: 10px;
+}
+
+.usersTable .edit-btn,
+.usersTable .delete-btn {
+    padding: 5px 8px;
+    font-size: 0.8em;
+    min-width: 60px;
+    margin: 2px;
+    background-color: #FAA61A;
+    color: black;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* Adjust column widths as needed */
+.usersTable th:nth-child(1), .usersTable td:nth-child(1) { width: 3%; } /* User ID */
+.usersTable th:nth-child(2), .usersTable td:nth-child(2) { width: 6%; } /* Username */
+.usersTable th:nth-child(3), .usersTable td:nth-child(3) { width: 5%; } /* Email */
+.usersTable th:nth-child(4), .usersTable td:nth-child(4) { width: 10%; } /* Fullname */
+.usersTable th:nth-child(5), .usersTable td:nth-child(5) { width: 8%; }  /* Role */
+.usersTable th:nth-child(6), .usersTable td:nth-child(6) { width: 8%; } /* Student ID */
+.usersTable th:nth-child(7), .usersTable td:nth-child(7) { width: 3%; }  /* Age */
+.usersTable th:nth-child(8), .usersTable td:nth-child(8) { width: 6%; } /* Course */
+.usersTable th:nth-child(9), .usersTable td:nth-child(9) { width: 6%; } /* Birthdate */
+.usersTable th:nth-child(10), .usersTable td:nth-child(10) { width: 15%; } /* Address */
+.usersTable th:nth-child(11), .usersTable td:nth-child(11) { width: 10%; } /* Contact No. */
+.usersTable th:nth-child(12), .usersTable td:nth-child(12) { width: auto; } /* Actions */
+
+.usersTable tbody tr:hover {
+    background-color: #f1c16f; /* Light cyan or any color you prefer */
+    cursor: pointer; /* Optional: Change cursor to indicate interactivity */
+}

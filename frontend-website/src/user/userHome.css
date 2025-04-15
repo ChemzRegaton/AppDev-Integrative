@@ -1,0 +1,232 @@
+article {
+    width: 100%;
+    height: fit-content;
+    background-color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-left: 250px;
+    color: black;
+    padding: 20px;
+}
+
+.dashboard {
+    width: 100%;
+    height: fit-content;
+    background-color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-left: 250px;
+    color: black;
+    padding: 20px;
+}
+
+section {
+    width: 50%;
+    margin: 1px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+input {
+    background-color: white;
+    width: 100%;
+    height: 12%;
+    border-radius: 15px;
+    box-sizing: border-box;
+    min-width: 500px;
+    padding: 2px;
+    margin: 10px;
+    color: black;
+    font-size: medium;
+}
+
+button {
+    background-color: #FAA61A;
+    color: black;
+    margin: 10px;
+    min-width: 150px;
+    font-style: bold;
+}
+
+.searchBooks {
+    width: 100%;
+    height: 7vh;
+    display: flex;
+    flex-direction: row;
+    align-content: start;
+    padding: 5px;
+    gap: 20px;
+}
+
+.searchBar {
+    background-color: rgb(255, 255, 255);
+    width: 50%;
+    height: inherit;
+    box-shadow: 2px 4px 6px rgba(0, 0, 0, 1);
+    border-radius: 10px;
+    border: 0px;
+}
+
+.btn {
+    height: 8vh;
+}
+
+.categoryBar {
+    background-color: rgb(255, 255, 255);
+    width: 30%;
+    height: inherit;
+    box-shadow: 2px 4px 6px rgba(0, 0, 0, 1);
+    border-radius: 10px;
+    border: 0px;
+}
+
+.totalBooks {
+    width: 20%;
+    height: inherit;
+    display: inline;
+    gap: 10px;
+    margin-top: -40px;
+}
+
+.actions {
+    width: 15%;
+    height: 10vh;
+    align-self: flex-start;
+}
+
+.btn {
+    align-content: flex-start;
+    justify-items: left;
+}
+/* Existing CSS for .card-container and the total books card */
+
+.image-sample {
+    background-color: #FAA61A;
+    align-self: center;
+    width: 100%;
+    max-height: 300vh;
+}
+
+.card-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px; /* Reduced gap */
+    padding: 10px; /* Reduced padding */
+    width: 100%;
+    align-items: center;
+}
+
+.total-books-card {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 10px; /* Reduced padding */
+    width: calc(20% - 10px); /* Adjust width for more items per row */
+    min-width: 150px; /* Reduced minimum width */
+    text-align: center;
+}
+
+.card-title {
+    font-size: 1em; /* Reduced font size */
+    margin-bottom: 5px; /* Reduced margin */
+}
+
+.card-count {
+    font-size: 1.5em; /* Reduced font size */
+    margin-bottom: 5px; /* Reduced margin */
+}
+
+.card-description {
+    font-size: 0.8em; /* Reduced font size */
+    margin-bottom: 8px; /* Reduced margin */
+}
+
+/* Styles for individual book cards */
+.book-card {
+    background-color: #031C3E;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 1);
+    padding: 8px; /* Reduced padding */
+    width: calc(20% - 10px); /* Adjust for more cards per row */
+    min-width: 50px; /* Reduced minimum width */
+    display: flex;
+    flex-direction: column;
+    gap: 5px; /* Reduced gap */
+    height: 70vh;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+}
+
+.book-cover {
+    width: 100%;
+    height: 40vh;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 5px; /* Reduced margin */
+    align-self: center;
+}
+
+.book-cover img {
+    display: block;
+    width: 100%;
+    height: 100%; /* Changed to 100% to fill the container */
+    object-fit: cover;
+}
+
+.book-details {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    color: white;
+}
+
+.book-title {
+    font-size: 0.9em; /* Reduced font size */
+    font-weight: bold;
+    margin-bottom: 3px; /* Reduced margin */
+}
+
+.book-info {
+    color: #ffffff;
+    font-size: 0.75em; /* Reduced font size */
+    margin-bottom: 2px; /* Reduced margin */
+}
+
+.book-request-button {
+    background-color: #FAA61A;
+    color: rgb(0, 0, 0);
+    border: none;
+    border-radius: 5px;
+    padding: 5px 8px; /* Reduced padding */
+    cursor: pointer;
+    font-size: 0.8em; /* Reduced font size */
+    align-self: flex-start;
+    margin-left: 20%;
+}
+
+.book-request-button:hover {
+    background-color: #031C3E;
+    color: white;
+    box-shadow: 0 2px 4px rgb(255, 255, 255);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .card-container {
+        flex-direction: column;
+        gap: 10px; /* Maintain gap in column layout */
+    }
+    .total-books-card,
+    .book-card {
+        width: 100%;
+        min-width: auto; /* Allow full width */
+    }
+}
