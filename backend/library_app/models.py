@@ -67,3 +67,33 @@ class BorrowingRecord(models.Model):
 
     def __str__(self):
         return f"{self.user.username} borrowed '{self.book.title}' on {self.borrow_date}"
+    
+class BorrowRequest(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    request_date = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(
+        max_length=10,
+        choices=[
+            ('pending', 'Pending'),
+            ('accepted', 'Accepted'),
+            ('rejected', 'Rejected'),
+        ],
+        default='pending'
+    )
+
+    def __str__(self):
+        return f"{self.user.username} requested '{self.book.title}' on {self.request_date} ({self.status})"
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='userprofile')
+    first_name = models.CharField(max_length=100, blank=True)
+    last_name = models.CharField(max_length=100, blank=True)
+    gender = models.CharField(max_length=10, choices=[('male', 'Male'), ('female', 'Female'), ('other', 'Other')], blank=True)
+    role = models.CharField(max_length=100, blank=True)
+    course = models.CharField(max_length=100, blank=True)
+    birthdate = models.DateField(null=True, blank=True)
+    address = models.TextField(blank=True)
+
+    def __str__(self):
+        return f"{self.user.username}'s Profile"

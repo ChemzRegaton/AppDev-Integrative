@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import './userBookManage.css';
 import Sidebar from './sideBar.jsx';
 
-function AdminBookManage() {
+function UserBookManage() {
     const [error, setError] = useState('');
     const [books, setBooks] = useState([]);
     const [totalBookQuantity, setTotalBookQuantity] = useState(0);
@@ -15,6 +15,7 @@ function AdminBookManage() {
     const [searchQuery, setSearchQuery] = useState('');
     const [categoryFilter, setCategoryFilter] = useState('');
     const navigate = useNavigate();
+    const authToken = localStorage.getItem('authToken'); // Get the auth token
 
     useEffect(() => {
         fetchBooks();
@@ -73,41 +74,35 @@ function AdminBookManage() {
         setCategoryFilter(event.target.value.toLowerCase());
     };
 
-    const handleBorrowBook = async (bookId) => {
-      const token = localStorage.getItem('authToken'); // Assuming you store it in localStorage
-      if (!token) {
-          console.error('Authentication token not found.');
-          setError('You must be logged in to borrow a book.');
-          return;
-      }
-      window.confirm(`Are you sure you want to borrow book with ID: ${bookId}?`)
-  
-      try {
-          const response = await axios.post(
-              `http://127.0.0.1:8000/api/library/books/${bookId}/borrow/`,
-              {}, // You might not need a body for a simple borrow action
-              {
-                  headers: {
-                      'Authorization': `Token ${token}`,
-                  },
-              }
-          );
-          console.log(response.data.message);
-          console.log('Borrowing Record:', response.data.borrowing_record);
-          setError('');
-          fetchBooks();
-      } catch (error) {
-          console.error('Error borrowing book:', error);
-          setError('Failed to borrow book.');
-          if (error.response && error.response.status === 401) {
-              setError('You are not authorized to perform this action.');
-          }
-      }
-  };
+    const handleSendRequest = async (bookId) => {
+        if (!authToken) {
+            console.error('Authentication token not found.');
+            setError('You must be logged in to send a request.');
+            return;
+        }
+        window.confirm(`Are you sure you want to request book with ID: ${bookId}?`);
 
-
-
-    
+        try {
+            const response = await axios.post(
+                'http://localhost:8000/api/library/requests/',
+                { book: bookId },
+                {
+                    headers: {
+                        'Authorization': `Token ${authToken}`,
+                    },
+                }
+            );
+            console.log('Borrow request sent successfully:', response.data);
+            setError(''); // Clear any previous error messages
+            // Optionally provide feedback to the user (e.g., a success message)
+        } catch (error) {
+            console.error('Error sending borrow request:', error);
+            setError('Failed to send borrow request.');
+            if (error.response && error.response.status === 401) {
+                setError('You are not authorized to perform this action.');
+            }
+        }
+    };
 
     const filteredBooks = books.filter(book => {
         const searchMatch =
@@ -144,7 +139,7 @@ function AdminBookManage() {
                 </section>
             </section>
             <section className='actions'>
-                
+
             </section>
             <section className='booksTable'>
                 {error && <p className='error'>{error}</p>}
@@ -179,7 +174,7 @@ function AdminBookManage() {
                                     <td>{book.available_quantity}</td>
                                     <td>{book.location}</td>
                                     <td>
-                                        <button className='borrow-btn' onClick={() => handleBorrowBook(book.book_id)}>Borrow</button> {/* New Borrow Button */}
+                                        <button className='borrow-btn' onClick={() => handleSendRequest(book.book_id)}>Request</button>
                                     </td>
                                 </tr>
                             ))}
@@ -201,4 +196,4 @@ function AdminBookManage() {
     );
 }
 
-export default AdminBookManage;
+export default UserBookManage;

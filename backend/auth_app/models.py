@@ -32,6 +32,7 @@ class Book(models.Model):
     def __str__(self):
         return self.title
 
+
 class BookBorrowing(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     book = models.ForeignKey(Book, on_delete=models.CASCADE)

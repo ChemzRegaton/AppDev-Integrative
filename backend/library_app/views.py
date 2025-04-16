@@ -2,11 +2,18 @@
 from rest_framework import generics, serializers
 from rest_framework import permissions
 from .models import Book, Request
-from .serializers import BookSerializer, RequestSerializer, BorrowingRecordSerializer
+from .serializers import BookSerializer, RequestSerializer, BorrowingRecordSerializer, BorrowRequestSerializer
 from django.db.models import Sum
 from rest_framework import views, status
 from rest_framework.response import Response
 from .models import Book, BorrowingRecord
+from rest_framework.permissions import IsAdminUser, IsAuthenticated, AllowAny
+from .models import BorrowRequest
+from .serializers import BorrowRequestSerializer
+import logging
+from rest_framework.views import APIView
+from django.utils import timezone
+from django.shortcuts import get_object_or_404
 
 class BookListCreateView(generics.ListCreateAPIView):
     queryset = Book.objects.all()
@@ -83,33 +90,99 @@ class DeleteBookByJSONView(views.APIView):
         except Exception as e:
             return Response({'error': f'Invalid JSON body: {e}'}, status=status.HTTP_400_BAD_REQUEST)
 
-class RequestListCreateView(generics.ListCreateAPIView):
-    queryset = Request.objects.all()
-    serializer_class = RequestSerializer
-    permission_classes = [permissions.AllowAny]
+import logging
+
+logger = logging.getLogger(__name__)
+
+class RequestListCreateView(generics.CreateAPIView): # Change to CreateAPIView
+    queryset = BorrowRequest.objects.all()
+    serializer_class = BorrowRequestSerializer
+    permission_classes = [permissions.AllowAny, IsAuthenticated]
+
+    def create(self, request, *args, **kwargs):
+        logger.info(f"Received data for borrow request creation at /requests/: {request.data}")
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            logger.info(f"BorrowRequestSerializer is valid: {serializer.validated_data}")
+            self.perform_create(serializer)
+            headers = self.get_success_headers(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        else:
+            logger.error(f"BorrowRequestSerializer errors: {serializer.errors}")
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
-class PendingRequestListView(generics.ListAPIView):
-    queryset = Request.objects.filter(status='pending')
-    serializer_class = RequestSerializer
-    permission_classes = [permissions.AllowAny] # Or your admin permission class
+class BorrowRequestCreateView(generics.CreateAPIView):
+    queryset = BorrowRequest.objects.all()
+    serializer_class = BorrowRequestSerializer
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+class PendingBorrowRequestListView(generics.ListAPIView):
+    queryset = BorrowRequest.objects.filter(status='pending').select_related('user', 'book', 'user__userprofile')
+    serializer_class = BorrowRequestSerializer
+    permission_classes = [AllowAny]
     
 class AcceptRequestView(generics.UpdateAPIView):
-    queryset = Request.objects.all()
-    serializer_class = RequestSerializer
+    queryset = BorrowRequest.objects.all()  # Use BorrowRequest model
+    serializer_class = BorrowRequestSerializer
     permission_classes = [permissions.AllowAny] # Or your admin permission
+    lookup_field = 'pk' # Assuming you're using the primary key of BorrowRequest
 
     def perform_update(self, serializer):
-        serializer.save(status='approved')
+        serializer.save(status='accepted')
+        borrow_request = self.get_object()
+        book = borrow_request.book
+        user = borrow_request.user
+
+        if book.available_quantity > 0:
+            book.available_quantity -= 1
+            book.save()
+
+            # Create a new borrowing record
+            borrowing_record = BorrowingRecord.objects.create(user=user, book=book)
+            borrowing_record_serializer = BorrowingRecordSerializer(borrowing_record)
+            self.borrowing_record_data = borrowing_record_serializer.data # Store for response
+        else:
+            # Optionally revert the request status if the book is unavailable
+            borrow_request.status = 'rejected'
+            borrow_request.save()
+            raise serializers.ValidationError(f"Book '{book.title}' is currently unavailable.")
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(status='accepted')
+
+        book_serializer = BookSerializer(instance.book) # Serialize the associated book
+        response_data = {
+            "message": f"Borrow request accepted for book '{instance.book.title}'.",
+            "book_detail": book_serializer.data
+        }
+        return Response(response_data)
 
 class RequestRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Request.objects.all()
     serializer_class = RequestSerializer
     permission_classes = [permissions.AllowAny]
+    
+class DeleteAllBorrowRequestsView(APIView):
+    permission_classes = [IsAdminUser]
 
-from rest_framework.views import APIView
+    def delete(self, request, *args, **kwargs):
+        try:
+            deleted_count = BorrowRequest.objects.all().delete()[0]  # Delete all BorrowRequest objects
+            return Response({'message': f'{deleted_count} borrow requests deleted successfully.'}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'error': f'Error deleting borrow requests: {e}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
 from rest_framework.response import Response
 from rest_framework import status
 from django.shortcuts import get_object_or_404

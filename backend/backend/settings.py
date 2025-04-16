@@ -63,6 +63,7 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
         'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
     ],
 }
 
@@ -76,9 +77,10 @@ AUTH_USER_MODEL = 'auth_app.CustomUser'
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:8000", # Default React Native development server port
     "http://10.0.2.2:8081", # For Android Emulator
+    "http://localhost:5173",
 
 ]
-CORS_ALLOW_METHODS = ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
+CORS_ALLOW_METHODS = ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH']
 CORS_ALLOW_HEADERS = ['Accept', 'Accept-Encoding', 'Authorization', 'Content-Type', 'DNT', 'Origin', 'User-Agent', 'X-Requested-With']
 CORS_ALLOW_CREDENTIALS = True # If you need to handle cookies across origins
 

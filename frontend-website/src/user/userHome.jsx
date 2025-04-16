@@ -45,6 +45,7 @@ function UserHome() {
         setTotalBooks(booksResponse.data.total_books);
         setAllBooks(booksResponse.data.books);
         setFilteredBooks(booksResponse.data.books); // Initially show all books
+        console.log('Fetched books:', booksResponse.data.books);
       } catch (error) {
         console.error('Error fetching data:', error);
         setError('Failed to fetch data.');
@@ -96,16 +97,17 @@ function UserHome() {
   };
 
   const handleSendRequest = async (bookId) => {
+    console.log('Sending request for book ID:', bookId);
     try {
-      const response = await axios.post(
-        'http://localhost:8000/api/library/requests/',
-        { book: bookId },
-        {
-          headers: {
-            'Authorization': `Token ${authToken}`,
-          },
-        }
-      );
+        const response = await axios.post(
+            'http://localhost:8000/api/library/requests/',
+            { book: bookId },
+            {
+                headers: {
+                    'Authorization': `Token ${authToken}`, // Ensure 'authToken' is the correct token
+                },
+            }
+        );
       console.log('Borrow request sent successfully:', response.data);
       // Optionally provide feedback to the user
     } catch (error) {
@@ -117,7 +119,7 @@ function UserHome() {
   return (
     <div className='dashboard'>
       <Sidebar />
-      <section className='searchBooks'>
+      <section className='searchBooks' style={{ position: 'sticky', top: 0, backgroundColor: 'white', zIndex: 10, padding: '10px 0', marginBottom: '10px' }}>
         <input
           className='btn'
           placeholder='Search Title, Author and Category'
@@ -137,8 +139,8 @@ function UserHome() {
               <p className='book-info'>Author: {book.author}</p>
               <p className='book-info'>Category: {book.category}</p>
             </div>
-            <button className='book-request-button' onClick={() => handleSendRequest(book.id)}>
-              Send Request
+            <button className='book-request-button' onClick={() => handleSendRequest(book.book_id)}>
+                Send Request
             </button>
           </section>
         ))}

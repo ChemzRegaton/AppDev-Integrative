@@ -1,6 +1,8 @@
 # library_app/serializers.py
 from rest_framework import serializers
-from .models import Book, Request, BorrowingRecord
+from django.contrib.auth.models import User
+from .models import Book, Request, BorrowingRecord, BorrowRequest
+from auth_app.models import CustomUser 
 
 class BookSerializer(serializers.ModelSerializer):
     book_id = serializers.CharField(read_only=True)
@@ -11,6 +13,26 @@ class BookSerializer(serializers.ModelSerializer):
         model = Book
         fields = '__all__'
 
+class CustomUserSerializerForBorrowRequest(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ['userId', 'fullname', 'role', 'studentId', 'age', 'course', 'birthdate', 'address', 'contactNumber']
+
+
+class BookInBorrowRequestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Book
+        fields = ['book_id', 'title', 'author', 'cover_image']
+
+class BorrowRequestSerializer(serializers.ModelSerializer):
+    requester_profile = CustomUserSerializerForBorrowRequest(read_only=True, source='user') # Directly use 'user' as the source
+    book_detail = BookInBorrowRequestSerializer(read_only=True, source='book')
+    book = serializers.PrimaryKeyRelatedField(queryset=Book.objects.all(), write_only=True)
+
+    class Meta:
+        model = BorrowRequest
+        fields = ['id', 'requester_profile', 'book_detail', 'request_date', 'status', 'book', 'user']
+        read_only_fields = ['id', 'request_date', 'status', 'requester_profile', 'book_detail', 'user']
 
 class RequestSerializer(serializers.ModelSerializer):
     user = serializers.ReadOnlyField(source='user.username')
@@ -18,7 +40,8 @@ class RequestSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Request
-        fields = '__all__'
+        fields = '__all__'  # This should include the 'book' field
+        read_only_fields = ['request_date', 'borrow_date', 'return_date', 'user'] # 'user' should be read-only on create
 
 class BorrowingRecordSerializer(serializers.ModelSerializer):
     user = serializers.ReadOnlyField(source='user.username') # Display username, not user ID
@@ -28,4 +51,3 @@ class BorrowingRecordSerializer(serializers.ModelSerializer):
         model = BorrowingRecord
         fields = '__all__'
         read_only_fields = ['borrow_date', 'return_date', 'is_returned']
-      

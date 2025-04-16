@@ -9,119 +9,67 @@ import EditBookPanel from './components/editBookPanel.jsx';
 
 function AdminBookManage() {
     const [error, setError] = useState('');
-    const [books, setBooks] = useState([]);
-    const [totalBookQuantity, setTotalBookQuantity] = useState(0);
-    const [isAddBookPanelVisible, setIsAddBookPanelVisible] = useState(false);
-    const [isEditBookPanelVisible, setIsEditBookPanelVisible] = useState(false);
-    const [editingBookId, setEditingBookId] = useState(null);
-    const [searchQuery, setSearchQuery] = useState('');
-    const [categoryFilter, setCategoryFilter] = useState('');
+    const [borrowingRecords, setBorrowingRecords] = useState([]);
     const navigate = useNavigate();
+    const authToken = localStorage.getItem('authToken');
+    const [searchQuery, setSearchQuery] = useState('');
+    const [returnedFilter, setReturnedFilter] = useState(''); // To filter by returned/not returned
 
     useEffect(() => {
-        fetchBooks();
+        fetchAcceptedBorrowingRecords();
     }, []);
 
-    const fetchBooks = async () => {
+    const fetchAcceptedBorrowingRecords = async () => {
         try {
-            const response = await axios.get('http://127.0.0.1:8000/api/library/books/');
-            setBooks(response.data.books);
-            const totalQuantity = response.data.books.reduce((sum, book) => sum + book.quantity, 0);
-            setTotalBookQuantity(totalQuantity);
+            const response = await axios.get('http://127.0.0.1:8000/api/library/borrowing-records/', { // Your API endpoint for all borrowing records
+                headers: {
+                    'Authorization': `Token ${authToken}`,
+                },
+            });
+            setBorrowingRecords(response.data.borrowingRecords); // Assuming your API returns an object with a 'borrowingRecords' array
         } catch (error) {
-            console.error('Error fetching books:', error);
-            setError('Failed to fetch books.');
+            console.error('Error fetching borrowing records:', error);
+            setError('Failed to fetch borrowing records.');
         }
     };
 
-    const handleDeleteBook = async (bookId) => {
-        if (window.confirm(`Are you sure you want to delete book with ID: ${bookId}?`)) {
+    const handleReturnBook = async (recordId) => {
+        if (window.confirm(`Are you sure this book has been returned?`)) {
             try {
-                await axios.delete(`http://127.0.0.1:8000/api/library/books/${bookId}/`);
-                console.log(`Book with ID ${bookId} deleted successfully.`);
-                fetchBooks();
+                // Assuming you have an endpoint to mark a borrowing record as returned
+                await axios.patch(`http://127.0.0.1:8000/api/library/borrowing-records/${recordId}/return/`, {}, {
+                    headers: {
+                        'Authorization': `Token ${authToken}`,
+                    },
+                });
+                console.log(`Borrowing record with ID ${recordId} marked as returned.`);
+                fetchAcceptedBorrowingRecords(); // Refresh the list
             } catch (error) {
-                console.error(`Error deleting book with ID ${bookId}:`, error);
-                setError('Failed to delete book.');
+                console.error(`Error marking borrowing record ${recordId} as returned:`, error);
+                setError('Failed to update return status.');
             }
         }
-    };
-
-    const handleAddBookClick = () => {
-        setIsAddBookPanelVisible(true);
-    };
-
-    const handleCloseAddBookPanel = () => {
-        setIsAddBookPanelVisible(false);
-        fetchBooks();
-    };
-
-    const handleEditBook = (bookId) => {
-        setEditingBookId(bookId);
-        setIsEditBookPanelVisible(true);
-    };
-
-    const handleCloseEditBookPanel = () => {
-        setIsEditBookPanelVisible(false);
-        setEditingBookId(null);
-        fetchBooks();
     };
 
     const handleSearchChange = (event) => {
         setSearchQuery(event.target.value.toLowerCase());
     };
 
-    const handleCategoryChange = (event) => {
-        setCategoryFilter(event.target.value.toLowerCase());
+    const handleReturnedFilterChange = (event) => {
+        setReturnedFilter(event.target.value);
     };
 
-    const handleBorrowBook = async (bookId) => {
-      const token = localStorage.getItem('authToken'); // Assuming you store it in localStorage
-      if (!token) {
-          console.error('Authentication token not found.');
-          setError('You must be logged in to borrow a book.');
-          return;
-      }
-      window.confirm(`Are you sure you want to borrow book with ID: ${bookId}?`)
-  
-      try {
-          const response = await axios.post(
-              `http://127.0.0.1:8000/api/library/books/${bookId}/borrow/`,
-              {}, // You might not need a body for a simple borrow action
-              {
-                  headers: {
-                      'Authorization': `Token ${token}`,
-                  },
-              }
-          );
-          console.log(response.data.message);
-          console.log('Borrowing Record:', response.data.borrowing_record);
-          setError('');
-          fetchBooks();
-      } catch (error) {
-          console.error('Error borrowing book:', error);
-          setError('Failed to borrow book.');
-          if (error.response && error.response.status === 401) {
-              setError('You are not authorized to perform this action.');
-          }
-      }
-  };
-
-
-
-    
-
-    const filteredBooks = books.filter(book => {
+    const filteredBorrowingRecords = borrowingRecords.filter(record => {
         const searchMatch =
-            book.title.toLowerCase().includes(searchQuery) ||
-            book.author.toLowerCase().includes(searchQuery) ||
-            book.book_id.toLowerCase().includes(searchQuery) ||
-            (book.publisher && book.publisher.toLowerCase().includes(searchQuery));
+            record.book_title.toLowerCase().includes(searchQuery) ||
+            record.user.toLowerCase().includes(searchQuery); // Assuming 'user' is the username
 
-        const categoryMatch =
-            !categoryFilter || book.category.toLowerCase().includes(categoryFilter);
+        const returnedMatch =
+            returnedFilter === '' ||
+            (returnedFilter === 'returned' && record.is_returned) ||
+            (returnedFilter === 'not_returned' && !record.is_returned);
 
-        return searchMatch && categoryMatch;
+        return searchMatch && returnedMatch;
     });
 
     return (
@@ -130,27 +78,25 @@ function AdminBookManage() {
             <section className='searchBooks'>
                 <input
                     className='searchBar'
-                    placeholder='Search Book (Title, Author, ID, Publisher)'
+                    placeholder='Search by Book Title or Borrower'
                     value={searchQuery}
                     onChange={handleSearchChange}
                 />
-                <input
+                <select
                     className='categoryBar'
-                    placeholder='Filter by Category'
-                    value={categoryFilter}
-                    onChange={handleCategoryChange}
-                />
-                <section className='totalBooks'>
-                    <p className='label' style={{ alignSelf: 'flex-start' }}>Total Books</p>
-                    <p className='label' style={{ alignSelf: 'flex-start', fontSize: '80px', marginTop: '-20px' }}>{totalBookQuantity}</p>
-                </section>
+                    value={returnedFilter}
+                    onChange={handleReturnedFilterChange}
+                >
+                    <option value="">Filter by Returned Status</option>
+                    <option value="returned">Returned</option>
+                    <option value="not_returned">Not Returned</option>
+                </select>
             </section>
             <section className='actions'>
-            
+                {error && <p className='error'>{error}</p>}
             </section>
             <section className='booksTable'>
-                {error && <p className='error'>{error}</p>}
-                {!error && filteredBooks.length > 0 && (
+                {!error && filteredBorrowingRecords.length > 0 && (
                     <table>
                         <thead>
                             <tr>
@@ -160,27 +106,30 @@ function AdminBookManage() {
                                 <th>Borrow Date</th>
                                 <th>Return Date</th>
                                 <th>Returned</th>
-                                
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {filteredBooks.map(book => (
-                                <tr key={book.book_id}>
-                                    <td>{book.book_id}</td>
-                                    <td>{book.title}</td>
-                                    <td>{book.author}</td>
-                                    <td>{book.publication_year}</td>
-                                    <td>{book.publisher}</td>
-                                    <td>{book.category}</td>
+                            {filteredBorrowingRecords.map(record => (
+                                <tr key={record.id}>
+                                    <td>{record.id}</td>
+                                    <td>{record.user}</td>
+                                    <td>{record.book_title}</td>
+                                    <td>{new Date(record.borrow_date).toLocaleDateString()}</td>
+                                    <td>{record.return_date ? new Date(record.return_date).toLocaleDateString() : 'Not Returned'}</td>
+                                    <td>{record.is_returned ? 'Yes' : 'No'}</td>
                                     <td>
-                                        <button className='rtn-btn' onClick={() => handleDeleteBook(book.book_id)}>Returned</button>                                    </td>
+                                        {!record.is_returned && (
+                                            <button className='rtn-btn' onClick={() => handleReturnBook(record.id)}>Mark as Returned</button>
+                                        )}
+                                    </td>
                                 </tr>
                             ))}
                         </tbody>
                     </table>
                 )}
-                {!error && filteredBooks.length === 0 && (
-                    <p>No books found matching your search criteria.</p>
+                {!error && filteredBorrowingRecords.length === 0 && (
+                    <p>No borrowing records found.</p>
                 )}
             </section>
         </div>
