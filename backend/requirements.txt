@@ -11,3 +11,4 @@ python_http_client==3.3.7
 sqlparse==0.5.3
 packaging==25.0
 starkbank-ecdsa==2.2.0
+Pillow
