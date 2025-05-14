@@ -27,7 +27,15 @@ MEDIA_URL = '/media/'
 
 SECRET_KEY = 'django-insecure-5aa&95wd8!rvgjr15k33@+cl-q+(v=^=!d6e_*60f01xnqdsz1'
 DEBUG = True
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'appdev-integrative-28.onrender.com', '10.0.2.2', '192.168.83.92', '192.168.29.92', '192.168.254.112', '192.168.51.92', '192.168.106.92', '192.168.181.92', '172.20.143.33', '172.20.143.191', '172.22.164.156', '192.168.38.92',  '192.168.38.92']
+import os
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'appdev-integrative-28.onrender.com']
+RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+if RENDER_EXTERNAL_HOSTNAME:
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
+PORT = os.environ.get('PORT')
+if PORT:
+    ALLOWED_HOSTS.append(f"0.0.0.0:{PORT}") # Or just "0.0.0.0" might suffice
+    ALLOWED_HOSTS.append(f":{PORT}")
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -156,7 +164,7 @@ EMAIL_HOST_PASSWORD = 'SG.NXB5ktkcS2KxdgksLi7CUg.PDNiqxQGcB-aL_YELf-QXGYsAmD2VZo
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-DEFAULT_FROM_EMAIL = 'librarymanagementsystem.ustp@gmail.com'  # Replace with your desired "from" email address
+DEFAULT_FROM_EMAIL = 'librarymanagementsystem.ustp@gmail.com' # Replace with your desired "from" email address
 
 def get_local_ip():
     try:
@@ -164,7 +172,7 @@ def get_local_ip():
         host_ip = socket.gethostbyname(host_name)
         return host_ip
     except socket.gaierror:
-        return "127.0.0.1"  # Default to localhost if the IP can't be resolved
+        return "127.0.0.1" # Default to localhost if the IP can't be resolved
 
-API_BASE_URL = f"http://{get_local_ip()}:8000"  # Dynamically set the IP
+API_BASE_URL = f"http://{get_local_ip()}:8000" # Dynamically set the IP
 #print(API_BASE_URL) #for debugging
