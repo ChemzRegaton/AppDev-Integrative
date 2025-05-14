@@ -1,0 +1,2 @@
+django>=4.0  # or the version you're using
+gunicorn
