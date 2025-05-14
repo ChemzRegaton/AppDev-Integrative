@@ -10,41 +10,34 @@ function Login() {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const handleLogin = async () => {
-    setError('');
+const handleLogin = async (e) => {
+    e.preventDefault();
+    console.log("Sending username:", username);
+    console.log("Sending password:", password);
+
     try {
-      console.log("Sending username:", username);
-      console.log("Sending password:", password);
-      const response = await axios.post(
-        'http://appdev-integrative-28.onrender.com:8000/api/auth/login/',
-        {
-          username: username,
-          password: password,
+      const response = await fetch("https://appdev-integrative-28.onrender.com/api/auth/login/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-  
-      if (response.data && response.data.token) {
-        localStorage.setItem('authToken', response.data.token);
-  
-       
-        if (response.data.is_superuser) {
-          navigate('/admin'); 
-        } else {
-          navigate('/user');  
-        }
-      } else {
-        setError('Invalid credentials');
+        body: JSON.stringify({
+          username,
+          password,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Login failed: ${response.status}`);
       }
-    } catch (err) {
-      setError(err.response?.data?.message || 'Login failed');
+
+      const data = await response.json();
+      console.log("Login successful:", data);
+      // Store token, redirect, etc.
+    } catch (error) {
+      console.error("Login error:", error.message);
     }
-  };
-  
+  };  
 
   const goToSignup = () => {
     navigate('/signup');
