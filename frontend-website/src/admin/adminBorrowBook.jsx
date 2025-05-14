@@ -23,7 +23,7 @@ function AdminBorrowBook({ onBookReturned }) { // Receive the refresh function a
 
     const fetchAcceptedBorrowingRecords = async () => {
         try {
-            const response = await axios.get('http://127.0.0.1:8000/api/library/borrowing-records/', { // Fetch all borrowing records
+            const response = await axios.get('http://appdev-integrative-28.onrender.com:8000/api/library/borrowing-records/', { // Fetch all borrowing records
                 headers: {
                     'Authorization': `Token ${authToken}`,
                 },
@@ -44,7 +44,7 @@ function AdminBorrowBook({ onBookReturned }) { // Receive the refresh function a
     const handleReturnBook = async (recordId, bookId, borrowerUsername) => {
         try {
             const response = await axios.patch(
-                `http://127.0.0.1:8000/api/library/borrowing-records/${recordId}/return/`,
+                `http://appdev-integrative-28.onrender.com:8000/api/library/borrowing-records/${recordId}/return/`,
                 {},
                 {
                     headers: {

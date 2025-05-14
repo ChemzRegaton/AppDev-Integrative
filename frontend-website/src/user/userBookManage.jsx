@@ -29,7 +29,7 @@ function UserBookManage() {
 
     const fetchBooks = async () => {
         try {
-            const response = await axios.get('http://127.0.0.1:8000/api/library/books/');
+            const response = await axios.get('http://appdev-integrative-28.onrender.com:8000/api/library/books/');
             setBooks(response.data.books);
             const totalQuantity = response.data.books.reduce((sum, book) => sum + book.quantity, 0);
             setTotalBookQuantity(totalQuantity);

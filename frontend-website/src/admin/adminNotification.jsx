@@ -14,7 +14,7 @@ function AdminNotification() {
 
     const fetchNewMessagesCount = async () => {
         try {
-            const response = await axios.get('http://localhost:8000/api/auth/admin/messages/unread/count/', { // New backend endpoint
+            const response = await axios.get('http://appdev-integrative-28.onrender.com:8000/api/auth/admin/messages/unread/count/', { // New backend endpoint
                 headers: {
                     'Authorization': `Token ${authToken}`,
                 },
@@ -28,7 +28,7 @@ function AdminNotification() {
 
     const fetchMessages = async () => {
         try {
-            const response = await axios.get('http://localhost:8000/api/auth/admin/messages/', {
+            const response = await axios.get('http://appdev-integrative-28.onrender.com:8000/api/auth/admin/messages/', {
                 headers: {
                     'Authorization': `Token ${authToken}`,
                 },

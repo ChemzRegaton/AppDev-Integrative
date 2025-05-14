@@ -65,7 +65,7 @@ function FAQ() {
 
         try {
             const response = await axios.post(
-                'http://localhost:8000/api/auth/messages/send/', // Use your API endpoint
+                'http://appdev-integrative-28.onrender.com:8000/api/auth/messages/send/', // Use your API endpoint
                 {
                     subject: contactSubject,
                     message: contactMessage,

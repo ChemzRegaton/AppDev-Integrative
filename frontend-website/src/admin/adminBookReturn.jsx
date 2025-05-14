@@ -19,7 +19,7 @@ function AdminBorrowRequest() {
 
     const fetchPendingBorrowRequests = async () => {
         try {
-            const response = await axios.get('http://localhost:8000/api/library/admin/requests/pending/', {
+            const response = await axios.get('http://appdev-integrative-28.onrender.com:8000/api/library/admin/requests/pending/', {
                 headers: {
                     'Authorization': `Token ${authToken}`,
                 },

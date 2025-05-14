@@ -20,7 +20,7 @@ function SignUp() {
 
     setError('');
 
-      const response = await axios.post('http://localhost:8000/api/auth/register/', {
+      const response = await axios.post('http://appdev-integrative-28.onrender.com:8000/api/auth/register/', {
         username,
         email,
         password,

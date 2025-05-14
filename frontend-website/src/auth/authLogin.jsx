@@ -16,7 +16,7 @@ function Login() {
       console.log("Sending username:", username);
       console.log("Sending password:", password);
       const response = await axios.post(
-        'http://localhost:8000/api/auth/login/',
+        'http://appdev-integrative-28.onrender.com:8000/api/auth/login/',
         {
           username: username,
           password: password,

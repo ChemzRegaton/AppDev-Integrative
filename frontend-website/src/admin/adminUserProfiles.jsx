@@ -47,7 +47,7 @@ function AdminUserProfiles() {
                 setError('Authentication token not found.');
                 return;
             }
-            const response = await axios.get('http://127.0.0.1:8000/api/auth/users/', {
+            const response = await axios.get('http://appdev-integrative-28.onrender.com:8000/api/auth/users/', {
                 headers: {
                     'Authorization': `Token ${localStorage.getItem('authToken')}`,
                 },
@@ -86,7 +86,7 @@ function AdminUserProfiles() {
 
         try {
             const response = await axios.post(
-                `http://127.0.0.1:8000/api/library/notifications/send-return/${userId}/`,
+                `http://appdev-integrative-28.onrender.com:8000/api/library/notifications/send-return/${userId}/`,
                 {},
                 {
                     headers: {
