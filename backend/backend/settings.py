@@ -28,7 +28,7 @@ MEDIA_URL = '/media/'
 SECRET_KEY = 'django-insecure-5aa&95wd8!rvgjr15k33@+cl-q+(v=^=!d6e_*60f01xnqdsz1'
 DEBUG = True
 import os
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'appdev-integrative-28.onrender.com']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'appdev-integrative-28.onrender.com', '192.168.254.106']
 RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
 if RENDER_EXTERNAL_HOSTNAME:
     ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
