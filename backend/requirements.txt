@@ -1,4 +1,6 @@
-django>=4.0  # or the version you're using
-gunicorn
-djangorestframework
-django-cors-headers
+Django==5.2.1
+djangorestframework==3.16.0
+djangorestframework-simplejwt==5.3.1
+gunicorn==23.0.0
+django-cors-headers==4.7.0
+sendgrid==6.11.0
