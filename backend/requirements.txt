@@ -4,3 +4,5 @@ djangorestframework-simplejwt==5.3.1
 gunicorn==23.0.0
 django-cors-headers==4.7.0
 sendgrid==6.11.0
+channels
+daphne
