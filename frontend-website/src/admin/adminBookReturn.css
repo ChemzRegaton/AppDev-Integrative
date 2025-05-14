@@ -4,11 +4,12 @@
     height: 100vh;
     background-color: #ffffff;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
     text-align: center;
     margin-left: 250px;
     color: black;
+    padding: 20px;
 }
 
 section{
@@ -41,7 +42,120 @@ button{
     margin: 10px;
     min-width: 150px;;
     font-style: bold;
+    font-weight: bold;
+    box-shadow: 2px 4px 6px rgba(0, 0, 0, 1);
+    border-radius: 20px;
+}
+
+.actions {
+    width: 100%;
+    margin-top: 20px;
+    align-self: flex-start;
+}
+
+.actions .error {
+    color: red;
+    margin-bottom: 10px;
+}
+
+.btn {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+/* Styling for the Borrow Requests Table */
+.borrowRequestsTable {
+    padding: 20px;
+    margin: 20px 0; /* Adjust vertical margin */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 1);
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    border-radius: 8px;
+    width: 95%; /* Make the table take full width of its container */
+    overflow-y: auto; /* Enable horizontal scrolling for smaller screens */
+    background-color: #031C3E;
+    color: white;
+}
+
+.borrowRequestsTable h1 {
+    color: #333;
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+.borrowRequestsTable table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9em;
+    
+}
+
+.borrowRequestsTable th, .borrowRequestsTable td {
+    padding: 10px 8px;
+    text-align: left;
+    
+}
+
+.borrowRequestsTable th {
+    font-weight: bold;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+.borrowRequestsTable tbody tr:hover {
+    background-color: #8c5902;
+    cursor: pointer;
 }
 
 
+.borrowRequestsTable .reject-btn {
+    background-color: #d9534f; /* Red for reject */
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.8em;
+}
 
+.borrowRequestsTable .reject-btn:hover {
+    background-color: #c9302c;
+}
+
+.borrowRequestsTable .error {
+    color: red;
+    margin-top: 10px;
+}
+
+/* Adjust column widths for the borrow requests table if needed */
+.borrowRequestsTable th:nth-child(1), .borrowRequestsTable td:nth-child(1) { width: 10%; } /* Request ID */
+.borrowRequestsTable th:nth-child(2), .borrowRequestsTable td:nth-child(2) { width: 25%; } /* Requester */
+.borrowRequestsTable th:nth-child(3), .borrowRequestsTable td:nth-child(3) { width: 30%; } /* Book Title */
+.borrowRequestsTable th:nth-child(4), .borrowRequestsTable td:nth-child(4) { width: 15%; } /* Request Date */
+.borrowRequestsTable th:nth-child(5), .borrowRequestsTable td:nth-child(5) { width: 20%; text-align: center; } /* Actions */
+
+/* Style for user profile image in the table */
+.borrowRequestsTable td:nth-child(2) > div {
+    display: flex;
+    align-items: center;
+}
+
+.borrowRequestsTable td:nth-child(2) > div > div { /* Style the image container */
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    margin-right: 8px;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.borrowRequestsTable td:nth-child(2) > div > div > img { /* Style the image itself */
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}

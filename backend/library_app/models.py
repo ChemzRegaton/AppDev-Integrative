@@ -81,10 +81,10 @@ class BorrowRequest(models.Model):
         ],
         default='pending'
     )
+    requester_profile_picture = models.CharField(max_length=255, blank=True, null=True)  # Store the path
 
     def __str__(self):
         return f"{self.user.username} requested '{self.book.title}' on {self.request_date} ({self.status})"
-
 class UserProfile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='userprofile')
     first_name = models.CharField(max_length=100, blank=True)
@@ -97,3 +97,26 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return f"{self.user.username}'s Profile"
+
+class Notification(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    message = models.TextField()
+    book = models.ForeignKey(Book, on_delete=models.SET_NULL, null=True, blank=True)
+    status = models.CharField(max_length=20, blank=True, null=True, choices=[
+        ('pending', 'Pending'),
+        ('accepted', 'Accepted'),
+        ('rejected', 'Rejected'),
+    ])
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Notification for {self.user.username}: {self.message}"
+
+class AdminActionLog(models.Model):
+    timestamp = models.DateTimeField(auto_now_add=True)
+    admin_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name='admin_logs')
+    action = models.CharField(max_length=255)
+    details = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.timestamp} - {self.admin_user} - {self.action}"

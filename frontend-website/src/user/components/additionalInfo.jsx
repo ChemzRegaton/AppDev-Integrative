@@ -1,9 +1,9 @@
-// AdditionalInfo.jsx
+// components/additionalInfo.jsx
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import './additionalInfo.css';
+import './additionalInfo.css'; // Make sure this CSS file exists
 
-function AdditionalInfo({ onClose, onProfileUpdated }) { // Add onProfileUpdated prop
+function AdditionalInfo({ onClose, onProfileUpdated, initialProfileData }) {
     const [errorMessage, setErrorMessage] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -12,7 +12,7 @@ function AdditionalInfo({ onClose, onProfileUpdated }) { // Add onProfileUpdated
         username: '',
         email: '',
     });
-    const [userData, setUserData] = useState({
+    const [userData, setUserData] = useState(() => ({
         fullname: '',
         role: 'Student', // Default value
         studentId: '',
@@ -21,11 +21,22 @@ function AdditionalInfo({ onClose, onProfileUpdated }) { // Add onProfileUpdated
         address: '',
         contactNumber: '',
         birthdate: '',
-    });
+        gender: '', // New field
+        section: '', // New field
+        school_year: '', // New field
+        ...initialProfileData, // Pre-fill with initial data
+    }));
 
     useEffect(() => {
         fetchCurrentUserInfo();
-    }, []);
+        // Set initial form values if initialProfileData is available
+        if (initialProfileData) {
+            setUserData(prevData => ({
+                ...prevData,
+                ...initialProfileData,
+            }));
+        }
+    }, [initialProfileData]); // Re-run effect when initialProfileData changes
 
     const fetchCurrentUserInfo = async () => {
         try {
@@ -39,8 +50,14 @@ function AdditionalInfo({ onClose, onProfileUpdated }) { // Add onProfileUpdated
                     'Authorization': `Token ${token}`,
                 },
             });
-            const { id: userId, username, email } = response.data;
+            const { id: userId, username, email, fullname, role, studentId } = response.data;
             setCurrentUserInfo({ userId, username, email });
+            setUserData(prevData => ({
+                ...prevData,
+                fullname: fullname || '',
+                role: role || 'Student',
+                studentId: studentId || '',
+            }));
         } catch (error) {
             console.error('Error fetching current user info:', error);
             setErrorMessage('Failed to fetch user information.');
@@ -59,43 +76,42 @@ function AdditionalInfo({ onClose, onProfileUpdated }) { // Add onProfileUpdated
         setIsSubmitting(true);
         setErrorMessage('');
         setSuccessMessage('');
-
+    
         try {
-            // Get the authentication token from localStorage
             const token = localStorage.getItem('authToken');
             console.log("Retrieved token:", token);
             if (!token) {
                 setErrorMessage('Authentication token not found. Please log in again.');
                 return;
             }
-
+    
             const profilePayload = {
                 ...userData,
                 userId: currentUserInfo.userId,
                 username: currentUserInfo.username,
                 email: currentUserInfo.email,
             };
-
+    
             const response = await axios.put(
-                'http://127.0.0.1:8000/api/auth/profile/', // Your new API endpoint
+                'http://127.0.0.1:8000/api/auth/profile/update/',
                 profilePayload,
                 {
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Token ${token}`, // Include the token for authentication
+                        'Authorization': `Token ${token}`,
                     },
                 }
             );
+    
             console.log('User profile updated successfully:', response.data);
             setSuccessMessage('Profile updated successfully!');
-            console.log('Recorded data:', profilePayload); // Log the data being sent
-
-            // Call the onProfileUpdated callback with the complete profile data
+            console.log('Recorded data:', profilePayload);
+    
             if (onProfileUpdated) {
-                onProfileUpdated(profilePayload); // Send the payload with userId, username, email
+                onProfileUpdated(response.data.profile);
             }
-
-            onClose(); // Close the panel after successful update
+    
+            onClose();
         } catch (error) {
             console.error('Error updating profile:', error.response ? error.response.data : error.message);
             setErrorMessage(error.response ? JSON.stringify(error.response.data) : 'Failed to update profile.');
@@ -103,37 +119,40 @@ function AdditionalInfo({ onClose, onProfileUpdated }) { // Add onProfileUpdated
             setIsSubmitting(false);
         }
     };
-
+    
     return (
         <div className="addBookPanelContainer"> {/* Keep the styling class if needed */}
-            <h2 style={{ color: 'white' }}>Additional Information:</h2>
+            <h2 style={{ color: 'white' }}>Edit Additional Information:</h2>
             {errorMessage && <p className="errorMessage">{errorMessage}</p>}
             {successMessage && <p className="successMessage">{successMessage}</p>}
             <form className="bookInput" onSubmit={(e) => { e.preventDefault(); handleUpdateProfile(); }}>
                 <section className="addInputs">
-                    <p style={{color: 'white', margin: '-4px'}}>Fullname:</p>
-                    <input
-                        className="input"
-                        placeholder="Fullname"
-                        name="fullname"
-                        value={userData.fullname}
-                        onChange={handleChange}
-                    />
-                    <p style={{color: 'white', margin: '-4px'}}>Role:</p>
+                <p style={{ color: 'white', margin: '-4px' }}>Fullname:</p>
+                <input
+                    className="input"
+                    placeholder="Fullname"
+                    name="fullname"
+                    value={userData.fullname}
+                    onChange={handleChange}
+                />
+
+                {/* Role (Editable) */}
+                <p style={{color: 'white', margin: '-4px'}}>Role:</p>
                     <select id="role" name="role" value={userData.role} onChange={handleChange}>
                         <option value="Student">Student</option>
                         <option value="Faculty/Staff">Faculty/Staff</option>
                         <option value="Guest">Guest</option>
                     </select>
 
-                    <p style={{color: 'white', margin: '1px'}}>ID Number: (If Student or Faculty/Staff)</p>
-                    <input
-                        className="input"
-                        placeholder="Student ID/Organization ID Number"
-                        name="studentId"
-                        value={userData.studentId}
-                        onChange={handleChange}
-                    />
+                {/* ID Number (Editable) */}
+                <p style={{ color: 'white', margin: '1px' }}>ID Number: (If Student or Faculty/Staff)</p>
+                <input
+                    className="input"
+                    placeholder="Student ID/Organization ID Number"
+                    name="studentId"
+                    value={userData.studentId}
+                    onChange={handleChange}
+                />
                     <p style={{color: 'white', margin: '-4px'}}>Age:</p>
                     <input type="number" id="age" name="age" min="5" max="500" placeholder='Age' value={userData.age} onChange={handleChange}></input>
                     <p style={{color: 'white', margin: '-4px'}}>College:</p>
@@ -173,9 +192,41 @@ function AdditionalInfo({ onClose, onProfileUpdated }) { // Add onProfileUpdated
                         value={userData.birthdate}
                         onChange={handleChange}
                     />
+
+                    {/* New fields for gender, section, and school year */}
+                    <p style={{color: 'white', margin: '-4px'}}>Gender:</p>
+                    <select id="gender" name="gender" value={userData.gender} onChange={handleChange}>
+                        <option value="">Select Gender</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                    </select>
+
+                    <p style={{color: 'white', margin: '-4px'}}>Section:</p>
+                    <input
+                        className="input"
+                        type='text'
+                        placeholder="Section"
+                        name="section"
+                        value={userData.section}
+                        onChange={handleChange}
+                    />
+
+                    <p style={{color: 'white', margin: '-4px'}}>School Year:</p>
+                    <input
+                        className="input"
+                        type='text'
+                        placeholder="School Year (e.g., 2023-2024)"
+                        name="school_year"
+                        value={userData.school_year}
+                        onChange={handleChange}
+                    />
                 </section>
                 <button className='submit' disabled={isSubmitting}>
                     {isSubmitting ? 'Submitting...' : 'Submit'}
+                </button>
+                <button type="button" className="cancel-button" onClick={onClose}>
+                    Cancel
                 </button>
             </form>
         </div>

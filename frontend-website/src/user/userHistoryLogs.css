@@ -44,5 +44,86 @@ button{
     font-style: bold;
 }
 
+.faq-container {
+    display: flex;
+    width: 100%;
 
+}
+
+.contact-admin {
+    background-color: #ffffff;
+}
+
+.answer {
+    background-color: #ffffff;
+}
+
+.question-button {
+    width: 100%;
+}
+
+.contact-admin {
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+    padding: 20px;
+    border-radius: 5px;
+    text-align: left;
+    margin-left: 20px;
+}
+
+.contact-admin h2 {
+    color: #000000;
+    margin-top: 0;
+    margin-bottom: 15px;
+    padding-bottom: 8px;
+    text-align: center;
+}
+
+.contact-admin textarea {
+    max-width: 100%;
+    min-height: 200px;
+    padding: 10px;
+    margin-bottom: 15px;
+    background-color: #ffffff;
+    border: 1px solid #ccc;
+    color: #000000;
+    border-radius: 4px;
+    box-sizing: border-box; /* Ensure padding and border are included in the element's total width and height */
+    font-size: 1em;
+}
+
+.message {
+    height: 20vh;
+    width: 100%;
+}
+
+.contact-form {
+    color: #000000;
+    display: flex;
+    flex-direction: column;
+    background-color: #ffffff;
+    text-align: left;
+    align-items: self-start;
+}
+
+.subject-input {
+    width: 50%;
+    align-self: self-start;
+    height: 10vh;
+}
+
+.message-input {
+    max-height: 40vh;
+    vertical-align: top;
+    min-width: 90%;
+    margin-left: 12px;
+    resize: none;
+}
+
+.button-container {
+    background-color: #ffffff;
+}
+
+/* Responsive adjustments for contact admin *
 

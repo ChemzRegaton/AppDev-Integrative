@@ -73,7 +73,8 @@ function AddBookPanel({ onClose }) {
   };
 
   return (
-    <part className="addBookPanelContainer">
+    <div className='overlay'>
+      <part className="addBookPanelContainer">
       <h1 style={{ color: 'white' }}>ADD NEW BOOK</h1>
       {errorMessage && <p className="errorMessage">{errorMessage}</p>}
       {successMessage && <p className="successMessage">{successMessage}</p>}
@@ -155,6 +156,8 @@ function AddBookPanel({ onClose }) {
         </section>
       </form>
     </part>
+
+    </div>
   );
 }
 

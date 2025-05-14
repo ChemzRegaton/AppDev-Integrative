@@ -13,7 +13,14 @@ from .views import (
     PendingBorrowRequestListView,  # Corrected import name
     AcceptRequestView,
     BookListCreateView,
-    DeleteAllBorrowRequestsView
+    DeleteAllBorrowRequestsView,
+    NotificationListView,
+    NotificationDeleteView,
+    UnreadNotificationCountView,
+    BorrowingRecordReturnView,
+    ReturnedBookCountView,
+    ReturnedBorrowingRecordListView,
+    
 )
 
 urlpatterns = [
@@ -27,10 +34,18 @@ urlpatterns = [
     # Borrowing Records
     path('borrowing-records/', BorrowingRecordListView.as_view(), name='borrowing-record-list'),  # For admin
     path('my-borrowing-records/', UserBorrowingRecordListView.as_view(), name='user-borrowing-record-list'),  # For users
+    path('borrowing-records/<int:pk>/return/', views.BorrowingRecordReturnView.as_view(), name='borrowing_record_return'),
+    path('returned-books/count/', views.ReturnedBookCountView.as_view(), name='returned_books_count'),
+    path('borrowing-records/returned/', ReturnedBorrowingRecordListView.as_view(), name='returned-borrowing-record-list'),
+    
 
     # Requests (General)
     path('requests/', views.RequestListCreateView.as_view(), name='request-list-create'),  # For users to create
     path('requests/<int:pk>/accept/', views.AcceptRequestView.as_view(), name='accept-request'),  # Use pk for request ID
+    path('notifications/', NotificationListView.as_view()),
+    path('notifications/<int:pk>/', NotificationDeleteView.as_view(), name='notification-delete'),
+    path('notifications/unread/count/', UnreadNotificationCountView.as_view(), name='unread-notification-count'),
+    path('notifications/send-return/<int:user_id>/', views.send_return_notification, name='send_return_notification'),
 
     # Admin Specific Requests
     path('borrow-requests/', views.BorrowRequestCreateView.as_view(), name='borrow-request-create'),

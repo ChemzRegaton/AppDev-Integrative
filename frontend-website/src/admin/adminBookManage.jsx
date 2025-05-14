@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import logoImage from '../assets/LOGO_WORD.png';
 import { useNavigate } from 'react-router-dom';
 import './adminBookManage.css';
 import Sidebar from './sideBar.jsx';
 import AddBookPanel from './components/addBookPanel.jsx';
 import EditBookPanel from './components/editBookPanel.jsx';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEdit, faTrash, faPlus } from '@fortawesome/free-solid-svg-icons';
 
 function AdminBookManage() {
     const [error, setError] = useState('');
@@ -76,40 +77,37 @@ function AdminBookManage() {
     };
 
     const handleBorrowBook = async (bookId) => {
-      const token = localStorage.getItem('authToken'); // Assuming you store it in localStorage
-      if (!token) {
-          console.error('Authentication token not found.');
-          setError('You must be logged in to borrow a book.');
-          return;
-      }
-      window.confirm(`Are you sure you want to borrow book with ID: ${bookId}?`)
-  
-      try {
-          const response = await axios.post(
-              `http://127.0.0.1:8000/api/library/books/${bookId}/borrow/`,
-              {}, // You might not need a body for a simple borrow action
-              {
-                  headers: {
-                      'Authorization': `Token ${token}`,
-                  },
-              }
-          );
-          console.log(response.data.message);
-          console.log('Borrowing Record:', response.data.borrowing_record);
-          setError('');
-          fetchBooks();
-      } catch (error) {
-          console.error('Error borrowing book:', error);
-          setError('Failed to borrow book.');
-          if (error.response && error.response.status === 401) {
-              setError('You are not authorized to perform this action.');
-          }
-      }
-  };
+        const token = localStorage.getItem('authToken'); // Assuming you store it in localStorage
+        if (!token) {
+            console.error('Authentication token not found.');
+            setError('You must be logged in to borrow a book.');
+            return;
+        }
+        window.confirm(`Are you sure you want to borrow book with ID: ${bookId}?`)
 
+        try {
+            const response = await axios.post(
+                `http://127.0.0.1:8000/api/library/books/${bookId}/borrow/`,
+                {}, // You might not need a body for a simple borrow action
+                {
+                    headers: {
+                        'Authorization': `Token ${token}`,
+                    },
+                }
+            );
+            console.log(response.data.message);
+            console.log('Borrowing Record:', response.data.borrowing_record);
+            setError('');
+            fetchBooks();
+        } catch (error) {
+            console.error('Error borrowing book:', error);
+            setError('Failed to borrow book.');
+            if (error.response && error.response.status === 401) {
+                setError('You are not authorized to perform this action.');
+            }
+        }
+    };
 
-
-    
 
     const filteredBooks = books.filter(book => {
         const searchMatch =
@@ -146,9 +144,11 @@ function AdminBookManage() {
                 </section>
             </section>
             <section className='actions'>
-                <button className='btn' onClick={handleAddBookClick}>Add New Book</button>
+                <button className='btn' onClick={handleAddBookClick}>
+                    <FontAwesomeIcon icon={faPlus} className='add-icon' /> Add New Book
+                </button>
             </section>
-            <section className='booksTable'>
+            <section className='adminBooksTable'> {/* Changed class name here */}
                 {error && <p className='error'>{error}</p>}
                 {!error && filteredBooks.length > 0 && (
                     <table>
@@ -171,8 +171,8 @@ function AdminBookManage() {
                             {filteredBooks.map(book => (
                                 <tr key={book.book_id}>
                                     <td>{book.book_id}</td>
-                                    <td>{book.title}</td>
-                                    <td>{book.author}</td>
+                                    <td style={{ textWrap: 'wrap' }}>{book.title}</td>
+                                    <td style={{ textWrap: 'wrap' }}>{book.author}</td>
                                     <td>{book.publication_year}</td>
                                     <td>{book.publisher}</td>
                                     <td>{book.category}</td>
@@ -180,9 +180,18 @@ function AdminBookManage() {
                                     <td>{book.quantity}</td>
                                     <td>{book.available_quantity}</td>
                                     <td>{book.location}</td>
-                                    <td>
-                                        <button className='edit-btn' onClick={() => handleEditBook(book.book_id)}>Edit</button>
-                                        <button className='delete-btn' onClick={() => handleDeleteBook(book.book_id)}>Delete</button>                                    </td>
+                                    <td className='actions-icons'>
+                                        <FontAwesomeIcon
+                                            icon={faEdit}
+                                            className='edit-icon'
+                                            onClick={() => handleEditBook(book.book_id)}
+                                        />
+                                        <FontAwesomeIcon
+                                            icon={faTrash}
+                                            className='delete-icon'
+                                            onClick={() => handleDeleteBook(book.book_id)}
+                                        />
+                                    </td>
                                 </tr>
                             ))}
                         </tbody>

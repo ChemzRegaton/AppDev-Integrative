@@ -85,7 +85,7 @@ function Login() {
             justifyContent: 'center',
             alignItems: 'center'
           }}>
-            <p>Don't have an account yet?</p>
+            <p style={{color: 'white'}}>Don't have an account yet?</p>
             <p
               style={{ color: '#FAA61A', fontWeight: '500', cursor: 'pointer' }}
               onClick={goToSignup}

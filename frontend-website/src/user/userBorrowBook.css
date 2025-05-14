@@ -45,4 +45,7 @@ button{
 }
 
 
-
+.policy-terms-container {
+    display: block;
+    width: 100%;
+}

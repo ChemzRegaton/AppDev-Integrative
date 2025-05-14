@@ -10,6 +10,12 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+#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
+
+"""
+Django settings for backend project.
+"""
+import socket
 import os
 from pathlib import Path
 
@@ -18,20 +24,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-5aa&95wd8!rvgjr15k33@+cl-q+(v=^=!d6e_*60f01xnqdsz1'
-
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '10.0.2.2', '192.168.254.118', '192.168.147.92',  '192.168.168.92', '192.168.147.92', '192.168.147.92']
-
-
-# Application definition
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '10.0.2.2', '192.168.83.92', '192.168.29.92', '192.168.254.112', '192.168.51.92', '192.168.106.92', '192.168.181.92', '172.20.143.33', '172.20.143.191', '172.22.164.156', '192.168.38.92',  '192.168.38.92']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -75,14 +70,13 @@ ROOT_URLCONF = 'backend.urls'
 CORS_ALLOW_ALL_ORIGINS = True
 AUTH_USER_MODEL = 'auth_app.CustomUser'
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:8000", # Default React Native development server port
-    "http://10.0.2.2:8081", # For Android Emulator
+    "http://localhost:8000",
+    "http://10.0.2.2:8081",
     "http://localhost:5173",
-
 ]
 CORS_ALLOW_METHODS = ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH']
 CORS_ALLOW_HEADERS = ['Accept', 'Accept-Encoding', 'Authorization', 'Content-Type', 'DNT', 'Origin', 'User-Agent', 'X-Requested-With']
-CORS_ALLOW_CREDENTIALS = True # If you need to handle cookies across origins
+CORS_ALLOW_CREDENTIALS = True
 
 TEMPLATES = [
     {
@@ -101,20 +95,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'backend.wsgi.application'
 
-
-# Database
-# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
-
-# Password validation
-# https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -152,25 +138,30 @@ LOGGING = {
     },
 }
 
-
-# Internationalization
-# https://docs.djangoproject.com/en/5.2/topics/i18n/
-
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_TZ = True
-
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.2/howto/static-files/
-
 STATIC_URL = 'static/'
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# SendGrid Configuration
+EMAIL_HOST = 'smtp.sendgrid.net'
+EMAIL_HOST_USER = 'apikey'
+# It's highly recommended to use an environment variable for your API key for security reasons.
+EMAIL_HOST_PASSWORD = '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'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+DEFAULT_FROM_EMAIL = 'librarymanagementsystem.ustp@gmail.com'  # Replace with your desired "from" email address
+
+def get_local_ip():
+    try:
+        host_name = socket.gethostname()
+        host_ip = socket.gethostbyname(host_name)
+        return host_ip
+    except socket.gaierror:
+        return "127.0.0.1"  # Default to localhost if the IP can't be resolved
+
+API_BASE_URL = f"http://{get_local_ip()}:8000"  # Dynamically set the IP
+#print(API_BASE_URL) #for debugging

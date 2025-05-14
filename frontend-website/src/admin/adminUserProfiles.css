@@ -1,101 +1,163 @@
-
+/* adminUserProfiles.css */
+.dashboard {
+    display: block;
+    width: 100%;
+    min-height: 100vh;
+    background-color: #f4f4f4;
+}
 
 .Filter {
-    background-color: #ffffff;
-    height: 20vh;
+    width: 100%;
+    height: 7vh;
     display: flex;
     flex-direction: row;
+    align-content: start;
+    padding: 5px;
+    gap: 20px;
+    background-color: white;
 }
 
 .searchBox {
-    height: 8vh;
-    width: 70%;
-    background-color: #ffffff;
+    background-color: rgb(255, 255, 255);
+    width: 50%;
+    height: inherit;
     box-shadow: 2px 4px 6px rgba(0, 0, 0, 1);
     border-radius: 10px;
-   
+    border: 0px;
 }
 
-
 .totalUsers {
-    width: 20%;
+    width: 30%; /* Adjusted width */
     min-height: 5vh;
     background-color: #ffffff;
-    height: inherit;
-    display: inline;
-    gap: 10px;
-    margin-top: 10px;
-    margin-left: 40px;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 3px; /* Further adjusted gap */
+    margin-top: 0;
+    margin-left: auto;
+    align-items: flex-end;
+    padding-right: 15px; /* Further adjusted padding */
+}
+
+.totalUsers .label {
+    font-size: 0.8em; /* Further adjusted font size */
+    color: #555;
+    margin: 0;
+}
+
+.totalUsers .label:nth-child(2) {
+    font-size: 2em; /* Further adjusted font size */
+    margin-top: -8px; /* Further adjusted margin */
+    color: #333;
 }
 
 .usersTable {
-    padding: 20px;
-    overflow-y: auto;
-    min-width:95%;
-    height: 200vh;
-    box-shadow: 2px 4px 6px rgba(0, 0, 0, 1);
-    border-radius: 10px;
-    gap: 40px;
+    padding: 15px; /* Further adjusted padding */
+    overflow: hidden; /* Important: to contain the scrollable area */
+    min-width: 98%; /* Adjusted min-width */
+    height: auto;
+    box-shadow: 1px 2px 3px rgba(0, 0, 0, 0.1); /* Even less shadow */
+    border-radius: 6px; /* Further adjusted border radius */
+    gap: 10px; /* Further adjusted gap */
     text-align: left;
     display: block;
+    margin: 15px auto; /* Further adjusted margin */
+    background-color: #031C3E;
+    border: 1px solid #ddd;
+}
+
+.usersTable .table-container {
+    max-height: 60vh; /* Adjust as needed for the desired scrollable height */
+    overflow-y: auto;
 }
 
 .usersTable table {
     width: 100%;
     border-collapse: collapse;
-    table-layout: fixed;
+    table-layout: auto; /* Keep auto for wrapping */
 }
 
 .usersTable th, .usersTable td {
-    border-bottom: 1px solid #ffffff;
-    padding: 4px;
+    padding: 8px 5px; /* Adjusted padding */
     text-align: left;
-    font-size: 0.8em;
+    font-size: 0.9em; /* Adjusted font size */
     overflow-wrap: break-word;
-    
+    color: white;
 }
 
 .usersTable th {
-    background-color: #ffffff;
     position: sticky;
-    min-width: 20%;
     top: 0;
     z-index: 1;
-}   
+    font-weight: bold;
+    color: #ffffff;
+    background-color: #031C3E;
+}
 
 .error {
     color: red;
     margin-top: 10px;
+    padding: 8px; /* Adjusted error padding */
+    background-color: #ffe0e0;
+    border-radius: 4px; /* Adjusted error border radius */
+    border: 1px solid #ffb3b3;
+    font-size: 0.8em; /* Adjusted error font size */
 }
 
-.usersTable .edit-btn,
-.usersTable .delete-btn {
-    padding: 5px 8px;
-    font-size: 0.8em;
-    min-width: 60px;
+.usersTable .remind-btn {
+    padding: 5px 8px; /* Adjusted button padding */
+    font-size: 0.8em; /* Adjusted button font size */
+    min-width: 60px; /* Adjusted button min-width */
     margin: 2px;
     background-color: #FAA61A;
     color: black;
     border: none;
-    border-radius: 5px;
+    border-radius: 4px; /* Adjusted button border radius */
     cursor: pointer;
 }
 
-/* Adjust column widths as needed */
-.usersTable th:nth-child(1), .usersTable td:nth-child(1) { width: 3%; } /* User ID */
-.usersTable th:nth-child(2), .usersTable td:nth-child(2) { width: 6%; } /* Username */
-.usersTable th:nth-child(3), .usersTable td:nth-child(3) { width: 5%; } /* Email */
-.usersTable th:nth-child(4), .usersTable td:nth-child(4) { width: 10%; } /* Fullname */
-.usersTable th:nth-child(5), .usersTable td:nth-child(5) { width: 8%; }  /* Role */
-.usersTable th:nth-child(6), .usersTable td:nth-child(6) { width: 8%; } /* Student ID */
-.usersTable th:nth-child(7), .usersTable td:nth-child(7) { width: 3%; }  /* Age */
-.usersTable th:nth-child(8), .usersTable td:nth-child(8) { width: 6%; } /* Course */
-.usersTable th:nth-child(9), .usersTable td:nth-child(9) { width: 6%; } /* Birthdate */
-.usersTable th:nth-child(10), .usersTable td:nth-child(10) { width: 15%; } /* Address */
-.usersTable th:nth-child(11), .usersTable td:nth-child(11) { width: 10%; } /* Contact No. */
-.usersTable th:nth-child(12), .usersTable td:nth-child(12) { width: auto; } /* Actions */
+/* Styles for the initial compact table */
+.usersTable th:nth-child(1), .usersTable td:nth-child(1) { width: 5%; } /* ID */
+.usersTable th:nth-child(2), .usersTable td:nth-child(2) { width: 15%; } /* Username */
+.usersTable th:nth-child(3), .usersTable td:nth-child(3) { width: 25%; } /* Fullname */
+.usersTable th:nth-child(4), .usersTable td:nth-child(4) { width: 10%; } /* Role */
+.usersTable th:nth-child(5), .usersTable td:nth-child(5) { width: 15%; } /* Stud ID */
+.usersTable th:nth-child(6), .usersTable td:nth-child(6) { width: 15%; } /* Course */
+.usersTable th:nth-child(7), .usersTable td:nth-child(7) { width: auto; } /* Actions */
+
+/* Hide other columns by default */
+.usersTable th:nth-child(8), .usersTable td:nth-child(8), /* Email */
+.usersTable th:nth-child(9), .usersTable td:nth-child(9), /* Age */
+.usersTable th:nth-child(10), .usersTable td:nth-child(10), /* Birthdate */
+.usersTable th:nth-child(11), .usersTable td:nth-child(11), /* Gender */
+.usersTable th:nth-child(12), .usersTable td:nth-child(12), /* Section */
+.usersTable th:nth-child(13), .usersTable td:nth-child(13), /* School Year */
+.usersTable th:nth-child(14), .usersTable td:nth-child(14), /* Profile Pic */
+.usersTable th:nth-child(15), .usersTable td:nth-child(15), /* Address */
+.usersTable th:nth-child(16), .usersTable td:nth-child(16) /* Contact No. */ {
+    display: none;
+}
 
 .usersTable tbody tr:hover {
-    background-color: #f1c16f; /* Light cyan or any color you prefer */
+    background-color: #8c5902; /* Light blue or any color you prefer */
     cursor: pointer; /* Optional: Change cursor to indicate interactivity */
+}
+
+.remind-btn {
+    background-color: #f0ad4e;
+    color: white;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+}
+
+.remind-btn:hover {
+    background-color:#031C3E;
+    color: white;
+}
+
+button {
+    border-radius: 10px;
 }

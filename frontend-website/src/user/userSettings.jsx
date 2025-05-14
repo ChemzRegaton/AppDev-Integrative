@@ -10,15 +10,15 @@ function UserSettings() {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    navigate('/login');
+    navigate('/');
   };
   
 
   return (
     <div className='dashboard'>
       <Sidebar />
-      <h1>This is an user Settings!</h1>
-      <button onClick={handleLogout}>LOG OUT</button>
+      <h1>Are you sure you want to log out!</h1>
+      <button onClick={handleLogout}>YES</button>
     </div>
   );
 }

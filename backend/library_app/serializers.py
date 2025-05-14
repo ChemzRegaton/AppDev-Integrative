@@ -1,7 +1,7 @@
 # library_app/serializers.py
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import Book, Request, BorrowingRecord, BorrowRequest
+from .models import Book, Request, BorrowingRecord, BorrowRequest, Notification
 from auth_app.models import CustomUser 
 
 class BookSerializer(serializers.ModelSerializer):
@@ -16,7 +16,7 @@ class BookSerializer(serializers.ModelSerializer):
 class CustomUserSerializerForBorrowRequest(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ['userId', 'fullname', 'role', 'studentId', 'age', 'course', 'birthdate', 'address', 'contactNumber']
+        fields = ['userId', 'fullname', 'role', 'studentId', 'age', 'course', 'birthdate', 'address', 'contactNumber', 'profile_picture']
 
 
 class BookInBorrowRequestSerializer(serializers.ModelSerializer):
@@ -25,14 +25,24 @@ class BookInBorrowRequestSerializer(serializers.ModelSerializer):
         fields = ['book_id', 'title', 'author', 'cover_image']
 
 class BorrowRequestSerializer(serializers.ModelSerializer):
-    requester_profile = CustomUserSerializerForBorrowRequest(read_only=True, source='user') # Directly use 'user' as the source
+    requester_profile = CustomUserSerializerForBorrowRequest(read_only=True, source='user')
     book_detail = BookInBorrowRequestSerializer(read_only=True, source='book')
     book = serializers.PrimaryKeyRelatedField(queryset=Book.objects.all(), write_only=True)
+    requester_profile_picture = serializers.SerializerMethodField(read_only=True) # Changed from CharField to SerializerMethodField
 
     class Meta:
         model = BorrowRequest
-        fields = ['id', 'requester_profile', 'book_detail', 'request_date', 'status', 'book', 'user']
-        read_only_fields = ['id', 'request_date', 'status', 'requester_profile', 'book_detail', 'user']
+        fields = ['id', 'requester_profile', 'book_detail', 'request_date', 'status', 'book', 'user', 'requester_profile_picture'] #add 'requester_profile_picture' to the fields
+        read_only_fields = ['id', 'request_date', 'status', 'requester_profile', 'book_detail', 'user', 'requester_profile_picture']
+
+    def get_requester_profile_picture(self, obj):
+        """
+        Gets the URL of the user's profile picture.
+        Returns None if the user has no profile picture.
+        """
+        if obj.user.profile_picture:
+            return obj.user.profile_picture.url
+        return None
 
 class RequestSerializer(serializers.ModelSerializer):
     user = serializers.ReadOnlyField(source='user.username')
@@ -51,3 +61,15 @@ class BorrowingRecordSerializer(serializers.ModelSerializer):
         model = BorrowingRecord
         fields = '__all__'
         read_only_fields = ['borrow_date', 'return_date', 'is_returned']
+
+class NotificationSerializer(serializers.ModelSerializer):
+    book_title = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Notification
+        fields = ['id', 'message', 'book', 'book_title', 'status', 'created_at']
+        read_only_fields = ['id', 'created_at']
+
+    def get_book_title(self, obj):
+        return obj.book.title if obj.book else None
+

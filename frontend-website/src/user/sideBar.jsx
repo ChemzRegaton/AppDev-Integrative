@@ -23,7 +23,7 @@ const Sidebar = () => {
           onClick={() => navigate('/user')}
           className={location.pathname === '/user' ? 'active' : ''}
         >
-          USER HOME
+          HOME
         </li>
         <li 
           onClick={() => navigate('/user/bookManage')}
@@ -35,25 +35,7 @@ const Sidebar = () => {
           onClick={() => navigate('/user/userProfiles')}
           className={location.pathname === '/user/userProfiles' ? 'active' : ''}
         >
-          USER PROFILES
-        </li>
-        <li 
-          onClick={() => navigate('/user/historyLogs')}
-          className={location.pathname === '/user/historyLogs' ? 'active' : ''}
-        >
-          HISTORY LOGS
-        </li>
-        <li 
-          onClick={() => navigate('/user/borrowBooks')}
-          className={location.pathname === '/user/borrowBooks' ? 'active' : ''}
-        >
-          BORROW BOOK REQUEST
-        </li>
-        <li 
-          onClick={() => navigate('/user/bookReturn')}
-          className={location.pathname === '/user/bookReturn' ? 'active' : ''}
-        >
-          BOOK RETURN
+          MY PROFILE
         </li>
         <li 
           onClick={() => navigate('/user/notification')}
@@ -62,10 +44,29 @@ const Sidebar = () => {
           NOTIFICATION
         </li>
         <li 
+          onClick={() => navigate('/user/historyLogs')}
+          className={location.pathname === '/user/historyLogs' ? 'active' : ''}
+        >
+          INQUIRY
+        </li>
+        <li 
+          onClick={() => navigate('/user/borrowBooks')}
+          className={location.pathname === '/user/borrowBooks' ? 'active' : ''}
+        >
+          POLICY AND TERMS
+        </li>
+        <li 
+          onClick={() => navigate('/user/bookReturn')}
+          className={location.pathname === '/user/bookReturn' ? 'active' : ''}
+        >
+          ABOUT US
+        </li>
+        
+        <li 
           onClick={() => navigate('/user/settings')}
           className={location.pathname === '/user/settings' ? 'active' : ''}
         >
-          SETTINGS
+          LOG OUT
         </li>
       </ul>
     </div>

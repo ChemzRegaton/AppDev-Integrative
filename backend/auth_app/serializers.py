@@ -1,12 +1,20 @@
-# auth_app/serializers.py
 from rest_framework import serializers
 from django.contrib.auth.password_validation import validate_password
-from .models import CustomUser
+from .models import CustomUser, BookBorrowing, ContactMessage # Import ContactMessage
 from rest_framework.authtoken.models import Token
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 class RegistrationSerializer(serializers.ModelSerializer):
+    """
+    Serializer for user registration.
+    - Handles fields: userId, username, fullname, role, course, birthdate, email, address, password, password2, is_superuser.
+    - Validates password matching and complexity.
+    - Creates a new user with the given data.
+    """
     password2 = serializers.CharField(write_only=True, style={'input_type': 'password'})
-    is_superuser = serializers.BooleanField(default=False)  # Add is_superuser field
+    is_superuser = serializers.BooleanField(default=False)
 
     class Meta:
         model = CustomUser
@@ -15,17 +23,23 @@ class RegistrationSerializer(serializers.ModelSerializer):
             'password': {'write_only': True, 'style': {'input_type': 'password'}},
             'email': {'required': True},
             'userId': {'required': False, 'read_only': True},
-            'is_superuser': {'write_only': True}  # Make it writable during registration
+            'is_superuser': {'write_only': True}
         }
 
     def validate(self, data):
+        """
+        Validates that the two password fields match and the password meets complexity requirements.
+        """
         if data['password'] != data['password2']:
             raise serializers.ValidationError("Passwords do not match.")
         validate_password(data['password'])
         return data
 
     def create(self, validated_data):
-        is_superuser = validated_data.pop('is_superuser', False) # Extract is_superuser
+        """
+        Creates a new user instance.
+        """
+        is_superuser = validated_data.pop('is_superuser', False)
         user = CustomUser.objects.create_user(
             userId=validated_data.get('userId'),
             username=validated_data['username'],
@@ -38,15 +52,24 @@ class RegistrationSerializer(serializers.ModelSerializer):
             password=validated_data['password']
         )
         user.is_superuser = is_superuser
-        user.is_staff = is_superuser # Typically, superusers are also staff
+        user.is_staff = is_superuser
         user.save()
-        return user    
-    
+        return user
+
+
 class LoginSerializer(serializers.Serializer):
+    """
+    Serializer for user login.
+    - Handles fields: username, password.
+    - Authenticates the user and raises an error for invalid credentials.
+    """
     username = serializers.CharField(max_length=150, required=True)
     password = serializers.CharField(write_only=True, required=True, style={'input_type': 'password'})
 
     def validate(self, data):
+        """
+        Validates the username and password against Django's authentication system.
+        """
         username = data.get('username')
         password = data.get('password')
 
@@ -63,27 +86,51 @@ class LoginSerializer(serializers.Serializer):
             raise serializers.ValidationError("Must include 'username' and 'password'.")
 
         return data
-    
-from rest_framework import serializers
-from .models import CustomUser
-from .models import BookBorrowing
-from rest_framework import serializers
-from django.contrib.auth import get_user_model
 
-User = get_user_model()
+
 
 class UserProfileSerializer(serializers.ModelSerializer):
+    """
+    Serializer for user profile information.
+    - Includes fields: id, username, email, fullname, role, studentId, age, course, address, contactNumber, birthdate, profile_picture, gender, section, school_year.
+    -  id, username, and email are read-only.
+    - profile_picture is now optional and can handle both file uploads and URLs.
+    """
+    profile_picture = serializers.ImageField(required=False)  # Make profile_picture optional
+
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'fullname', 'role', 'studentId', 'age', 'course', 'address', 'contactNumber', 'birthdate'] # Include id, username, email
-        read_only_fields = ['id', 'username', 'email'] # Typically these are read-only for profile updates
-        
+        fields = ['id', 'username', 'email', 'fullname', 'role', 'studentId', 'age', 'course', 'address', 'contactNumber', 'birthdate', 'profile_picture', 'gender', 'section', 'school_year']
+        read_only_fields = ['id', 'username', 'email']
+
+
+
 class UserWithBorrowCountSerializer(serializers.ModelSerializer):
+    """
+    Serializer for user information along with the count of books currently borrowed.
+    - Includes all user fields and a 'borrowed_count' field.
+    """
     borrowed_count = serializers.SerializerMethodField()
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'fullname', 'role', 'studentId', 'age', 'course', 'birthdate', 'address', 'contactNumber', 'borrowed_count'] # Include all relevant user fields
+        fields = ['id', 'username', 'email', 'fullname', 'role', 'studentId', 'age', 'course', 'birthdate', 'address', 'contactNumber', 'borrowed_count']
 
     def get_borrowed_count(self, user):
+        """
+        Calculates the number of books the user has currently borrowed.
+        """
         return BookBorrowing.objects.filter(user=user, returned_date__isnull=True).count()
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'username'] # Include relevant user details
+
+class ContactMessageSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True) # Display user details, but don't allow modification
+
+    class Meta:
+        model = ContactMessage
+        fields = ['id', 'user', 'subject', 'message', 'sent_at', 'is_read', 'response', 'responded_at']
+        read_only_fields = ['id', 'user', 'sent_at', 'is_read', 'response', 'responded_at'] # These fields should not be directly modified during creation

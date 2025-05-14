@@ -87,10 +87,18 @@ button {
     
 }
 
+.head {
+    height: 50px;
+}
+
 .btn {
     align-content: flex-start;
     justify-items: left;
 }
+
+/* userBookManage.css */
+
+/* ... other styles ... */
 
 .booksTable {
     padding: 20px;
@@ -108,8 +116,8 @@ button {
     width: 100%;
     max-width: 100%;
     border-collapse: collapse;
+    border-bottom: #000000;
 }
-
 
 .booksTable td {
     border-bottom: #000000;
@@ -117,6 +125,7 @@ button {
     font-size: 0.8em;
     overflow-wrap: break-word; /* Allow wrapping */
     word-break: break-word; /* For older browsers */
+    padding: 8px 10px; /* Added padding to td */
 }
 
 .booksTable th {
@@ -126,76 +135,79 @@ button {
     word-break: break-word; /* For older browsers */
     position: sticky; /* Make the header sticky */
     top: 0; /* Stick to the top of its containing block */
-    background-color: white; /* Ensure the header covers the scrolling content */
     z-index: 1; /* Ensure the header stays on top of the content */
+     /* Added padding to th */
+    background-color: #031C3E;
+    height: 20px;
 }
 
-.booksTable th:not(:last-child),
-.booksTable td:not(:last-child) {
-    padding-right: 25px;
-}
-
-/* Column widths */
+/* Column widths - Adjusted to include the Cover column */
 .booksTable th:nth-child(1),
 .booksTable td:nth-child(1) {
-    width: 8%; /* Book ID */
+    width: 8%; /* Cover */
     white-space: nowrap; /* Prevent wrapping */
+    text-align: center; /* Center the cover image */
 }
 
 .booksTable th:nth-child(2),
 .booksTable td:nth-child(2) {
-    width: 15%; /* Title */
+    width: 5%; /* Book ID */
+    white-space: nowrap; /* Prevent wrapping */
 }
 
 .booksTable th:nth-child(3),
 .booksTable td:nth-child(3) {
-    width: 15%; /* Author */
+    width: 15%; /* Title */
 }
 
 .booksTable th:nth-child(4),
 .booksTable td:nth-child(4) {
-    width: 10%; /* Yr. Published */
-    white-space: nowrap; /* Prevent wrapping */
+    width: 10%; /* Author */
+    white-space: wrap;
 }
 
 .booksTable th:nth-child(5),
 .booksTable td:nth-child(5) {
-    width: 15%; /* Publisher */
+    width: 8%; /* Yr. Published */
+    white-space: nowrap; /* Prevent wrapping */
 }
 
 .booksTable th:nth-child(6),
 .booksTable td:nth-child(6) {
-    width: 12%; /* Category */
+    width: 12%; /* Publisher */
 }
 
 .booksTable th:nth-child(7),
 .booksTable td:nth-child(7) {
-    width: 10%; /* Date Added */
-    white-space: nowrap; /* Prevent wrapping */
+    width: 8%; /* Category */
 }
 
 .booksTable th:nth-child(8),
 .booksTable td:nth-child(8) {
-    width: 8%; /* Quantity */
-    /* white-space: normal; /* Allow wrapping for header */
-    text-align: center; /* Center the content if wrapped */
+    width: 10%; /* Date Added */
+    white-space: nowrap; /* Prevent wrapping */
 }
 
 .booksTable th:nth-child(9),
 .booksTable td:nth-child(9) {
-    width: 8%; /* Available */
-    /* white-space: normal; /* Allow wrapping for header */
-    text-align: center; /* Center the content if wrapped */
+    width: 6%; /* Quantity */
+    text-align: center; /* Center the content */
 }
 
 .booksTable th:nth-child(10),
 .booksTable td:nth-child(10) {
-    width: 8%; /* Location */
-    white-space: nowrap; /* Prevent wrapping */
+    width: 6%; /* Available */
+    text-align: center; /* Center the content */
 }
 
 .booksTable th:nth-child(11),
 .booksTable td:nth-child(11) {
+    width: 8%; /* Location */
+    white-space: nowrap; /* Prevent wrapping */
+}
+
+.booksTable th:nth-child(12),
+.booksTable td:nth-child(12) {
     text-align: center;
     width: 10%; /* Actions */
     white-space: nowrap; /* Prevent wrapping */
@@ -215,10 +227,6 @@ button {
     margin: 0px;
 }
 
-.booksTable tbody tr td {
-    padding: 8px 10px;
-}
-
 .booksTable .edit-btn,
 .booksTable .delete-btn {
     padding: 5px 8px;
@@ -227,4 +235,10 @@ button {
     height: auto;
     line-height: 1;
     margin: 2px;
+}
+
+.booksTable tbody tr:hover { /* Changed class name here */
+    background-color: #f1c16f; /* Light blue or any color you prefer */
+    cursor: pointer; /* Optional: Change cursor to indicate interactivity */
+    border-bottom: #000000;
 }

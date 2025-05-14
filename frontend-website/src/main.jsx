@@ -13,6 +13,7 @@ import AdminBorrowBook from './admin/adminBorrowBook.jsx'
 import AdminBookReturn from './admin/adminBookReturn.jsx'
 import AdminNotification from './admin/adminNotification.jsx'
 import AdminSettings from './admin/adminSettings.jsx'
+import AdminReturnedBook from './admin/adminReturnList.jsx'
 
 import UserUserProfiles from './user/userUserProfiles.jsx'
 import UserHome from './user/userHome.jsx'
@@ -29,7 +30,7 @@ createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
       <Routes>
-        <Route path="/login" element={<Login/>} />
+        <Route path="/" element={<Login/>} />
         <Route path="/signup" element={<SignUp/>} />
 
         
@@ -41,6 +42,9 @@ createRoot(document.getElementById('root')).render(
         <Route path="/admin/bookReturn" element={<AdminBookReturn />} />
         <Route path="/admin/notification" element={<AdminNotification />} />
         <Route path="/admin/settings" element={<AdminSettings />} />
+        <Route path="/admin/bookReturnList" element={<AdminReturnedBook />} />
+        
+        {/* User Routes */}
 
         <Route path="/user" element={<UserHome />} />
         <Route path="/user/userProfiles" element={<UserUserProfiles />} />

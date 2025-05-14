@@ -1,4 +1,4 @@
-
+/* adminBookManage.css */
 
 .dashboard {
     width: 100%;
@@ -84,15 +84,24 @@ button {
     width: 15%;
     height: 10vh;
     align-self: flex-start;
-    
 }
+
+.booksTable {
+    background-color: #031C3E;
+    color: white;
+}
+
+.booksTable  {
+    color: white;
+}
+
 
 .btn {
     align-content: flex-start;
     justify-items: left;
 }
 
-.booksTable {
+.adminBooksTable {
     padding: 20px;
     overflow-y: auto;
     width: 95%;
@@ -102,106 +111,109 @@ button {
     gap: 40px;
     text-align: left;
     display: block;
+    background-color: #031C3E;
 }
 
-.booksTable table {
-    width: 90%;
-    max-width: 90%;
+.adminBooksTable p {
+    color: white;
+}
+
+.adminBooksTable table {
+    width: 100%;
+    max-width: 100%;
     border-collapse: collapse;
-    table-layout: fixed; /* Force fixed layout */
-    overflow-y: auto ;
+    table-layout: fixed;
 }
 
 
-.booksTable td {
-    border-bottom: #000000;
+.adminBooksTable td {
+    border-bottom: #ffffff;
     text-align: left;
     font-size: 0.8em;
-    overflow-wrap: break-word; /* Allow wrapping */
-    word-break: break-word; /* For older browsers */
+    overflow-wrap: break-word;
+    word-break: break-word;
+    padding: 8px 10px;
+    vertical-align: middle;
 }
 
-.booksTable th {
+.adminBooksTable td {
+    color: white;
+}
+
+.adminBooksTable th {
     text-align: left;
     font-size: 0.8em;
-    overflow-wrap: break-word; /* Allow wrapping */
-    word-break: break-word; /* For older browsers */
-    position: sticky; /* Make the header sticky */
-    top: 0; /* Stick to the top of its containing block */
-    background-color: white; /* Ensure the header covers the scrolling content */
-    z-index: 1; /* Ensure the header stays on top of the content */
+    overflow-wrap: break-word;
+    word-break: break-word;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    padding: 8px 10px;
+    color: white;
+    background-color: #031C3E; /* Changed header background color to #031C3E */
 }
 
-.booksTable th:not(:last-child),
-.booksTable td:not(:last-child) {
-    padding-right: 25px;
+.adminBooksTable th:not(:last-child),
+.adminBooksTable td:not(:last-child) {
+    padding-right: 15px;
 }
 
-/* Column widths */
-.booksTable th:nth-child(1),
-.booksTable td:nth-child(1) {
-    width: 8%; /* Book ID */
-    white-space: nowrap; /* Prevent wrapping */
+.adminBooksTable th:nth-child(1),
+.adminBooksTable td:nth-child(1) {
+    width: 8%;
 }
 
-.booksTable th:nth-child(2),
-.booksTable td:nth-child(2) {
-    width: 10%; /* Title */
-    white-space: wrap;
+.adminBooksTable th:nth-child(2),
+.adminBooksTable td:nth-child(2) {
+    width: 20%;
 }
 
-.booksTable th:nth-child(3),
-.booksTable td:nth-child(3) {
-    width: 15%; /* Author */
+.adminBooksTable th:nth-child(3),
+.adminBooksTable td:nth-child(3) {
+    width: 15%;
 }
 
-.booksTable th:nth-child(4),
-.booksTable td:nth-child(4) {
-    width: 10%; /* Yr. Published */
-    white-space: nowrap; /* Prevent wrapping */
+.adminBooksTable th:nth-child(4),
+.adminBooksTable td:nth-child(4) {
+    width: 8%;
 }
 
-.booksTable th:nth-child(5),
-.booksTable td:nth-child(5) {
-    width: 15%; /* Publisher */
+.adminBooksTable th:nth-child(5),
+.adminBooksTable td:nth-child(5) {
+    width: 15%;
 }
 
-.booksTable th:nth-child(6),
-.booksTable td:nth-child(6) {
-    width: 12%; /* Category */
+.adminBooksTable th:nth-child(6),
+.adminBooksTable td:nth-child(6) {
+    width: 10%;
 }
 
-.booksTable th:nth-child(7),
-.booksTable td:nth-child(7) {
-    width: 10%; /* Date Added */
-    white-space: nowrap; /* Prevent wrapping */
+.adminBooksTable th:nth-child(7),
+.adminBooksTable td:nth-child(7) {
+    width: 10%;
 }
 
-.booksTable th:nth-child(8),
-.booksTable td:nth-child(8) {
-    width: 10%; /* Quantity */
-    /* white-space: normal; /* Allow wrapping for header */
-    text-align: center; /* Center the content if wrapped */
-}
-
-.booksTable th:nth-child(9),
-.booksTable td:nth-child(9) {
-    width: 8%; /* Available */
-    /* white-space: normal; /* Allow wrapping for header */
-    text-align: center; /* Center the content if wrapped */
-}
-
-.booksTable th:nth-child(10),
-.booksTable td:nth-child(10) {
-    width: 5%; /* Location */
-    white-space: nowrap; /* Prevent wrapping */
-}
-
-.booksTable th:nth-child(11),
-.booksTable td:nth-child(11) {
+.adminBooksTable th:nth-child(8),
+.adminBooksTable td:nth-child(8) {
+    width: 8%;
     text-align: center;
-    width: 8%; /* Actions */
-    white-space: nowrap; /* Prevent wrapping */
+}
+
+.adminBooksTable th:nth-child(9),
+.adminBooksTable td:nth-child(9) {
+    width: 8%;
+    text-align: center;
+}
+
+.adminBooksTable th:nth-child(10),
+.adminBooksTable td:nth-child(10) {
+    width: 8%;
+}
+
+.adminBooksTable th:nth-child(11),
+.adminBooksTable td:nth-child(11) {
+    width: 10%;
+    text-align: center;
 }
 
 .error {
@@ -209,7 +221,7 @@ button {
     margin-top: 10px;
 }
 
-.booksTable tbody tr td button {
+.adminBooksTable tbody tr td button {
     padding: 5px 8px;
     font-size: 0.7em;
     max-width: 80%;
@@ -218,21 +230,46 @@ button {
     margin: 0px;
 }
 
-.booksTable tbody tr td {
+.adminBooksTable tbody tr td {
     padding: 8px 10px;
 }
 
-.booksTable .edit-btn,
-.booksTable .delete-btn {
+.adminBooksTable .edit-btn,
+.adminBooksTable .delete-btn {
     padding: 5px 8px;
     font-size: 0.7em;
-    min-width: 30px;
+    min-width: 50px;
     height: auto;
     line-height: 1;
     margin: 2px;
 }
 
-.booksTable tbody tr:hover {
-    background-color: #f1c16f; /* Light blue or any color you prefer */
-    cursor: pointer; /* Optional: Change cursor to indicate interactivity */
+.adminBooksTable tbody tr:hover {
+    background-color: #8c5902;
+    cursor: pointer;
 }
+.rtn-btn{
+    background-color: #FAA61A;
+    color: black;
+}
+
+.actions-icons {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Vertically align items in the flex container */
+    justify-content: center; /* Horizontally center the icons */
+    gap: 10px; /* Creates a 10-pixel gap between the icons */
+    margin-left: 10px;
+}
+.edit-icon, .delete-icon {
+    cursor: pointer;
+    font-size: 1.8em; /* Adjust icon size as needed */
+    color: orange; /* Sets the color of both icons to orange */
+}
+
+.edit-icon:hover, .delete-icon:hover {
+    cursor: pointer;
+    font-size: 1.8em; /* Adjust icon size as needed */
+    color: white; /* Sets the color of both icons to orange */
+}
+

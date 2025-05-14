@@ -1,0 +1,149 @@
+/* addBookPanel.css */
+.MessageContainer {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #031C3E;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 1);
+    z-index: 1000; /* Ensure it's on top of other content */
+    width: 20%; /* Adjusted width */
+    max-width: 500px; /* Optional: set a maximum width */
+    max-height: 90vh; /* Adjusted max height */
+    display: flex;
+    flex-direction: column;
+
+  }
+  
+  .addBookPanelContainer h2 {
+    text-align: center;
+    margin-bottom: 15px;
+    color: #333;
+  }
+  
+  .formGroup {
+    margin-bottom: 10px; /* Reduced margin for more compact layout */
+  }
+  
+  .formGroup label {
+    display: block;
+    margin-bottom: 3px; /* Reduced margin */
+    font-weight: bold;
+    color: #555;
+    font-size: 0.9em; /* Slightly smaller font */
+  }
+  
+  .formGroup input[type="text"],
+  .formGroup input[type="number"],
+  .formGroup input[type="date"] {
+    width: calc(100% - 12px); /* Adjust for padding and border */
+    padding: 8px; /* Reduced padding */
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 0.9em; /* Slightly smaller font */
+  }
+  
+  .buttonGroup {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 15px; /* Reduced margin */
+  }
+  
+  .buttonGroup button {
+    padding: 8px 12px; /* Reduced padding */
+    border: none;
+    border-radius: 4px;
+    font-size: 0.9em; /* Slightly smaller font */
+    cursor: pointer;
+  }
+  
+  .buttonGroup button[type="submit"] {
+    background-color: #007bff;
+    color: white;
+  }
+  
+  .buttonGroup button[type="submit"]:hover {
+    background-color: #0056b3;
+  }
+  
+  .buttonGroup button[type="button"] {
+    background-color: #f0f0f0;
+    color: #333;
+  }
+  
+  .buttonGroup button[type="button"]:hover {
+    background-color: #e0e0e0;
+  }
+  
+  .errorMessage {
+    color: red;
+    margin-bottom: 8px; /* Reduced margin */
+    font-size: 0.8em;
+  }
+  
+  .successMessage {
+    color: green;
+    margin-bottom: 8px; /* Reduced margin */
+    font-size: 0.8em;
+  }
+  
+  /* Style for the close button */
+  .closeButton {
+    position: absolute;
+    top: 5px; /* Adjusted top */
+    right: 5px; /* Adjusted right */
+    font-size: 18px; /* Slightly smaller font */
+    font-weight: bold;
+    color: #000000;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+  }
+  
+  
+
+  .bookInput {
+    width: 100%;
+    height: inherit;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .addInputs {
+    background-color: #031C3E;;
+    width: 80%;
+    height: 70vh;
+    align-items: flex-start;
+    display: flex;
+    flex-direction: column;
+    padding: 5px;
+  }
+
+  .input {
+    min-width: 200px;
+    margin: 5px;
+    align-items: center;
+    display: block;
+  }
+
+  select {
+    width: 100%;
+    height: 7vh;
+    border-radius: 10px;
+    margin-left: 5px;
+    background-color: white;
+    color: #000000;
+  }
+
+  option {
+    min-height: 40px;
+  }
+#age {
+  min-width: 150px;
+}

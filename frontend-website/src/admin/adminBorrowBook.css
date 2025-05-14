@@ -1,4 +1,4 @@
-
+/* adminBorrowBook.css */
 
 .dashboard {
     width: 100%;
@@ -11,9 +11,9 @@
     margin-left: 250px;
     color: black;
     padding: 20px;
-}
-
-section {
+  }
+  
+  section {
     width: 50%;
     height: 90vh;
     margin: 1px;
@@ -21,19 +21,9 @@ section {
     justify-content: center;
     align-items: center;
     text-align: center;
-}
-
-.dashboard > section { /* Target the section directly under the dashboard */
-    width: calc(100% - 270px); /* Adjust for sidebar and some margin */
-    height: auto; /* Adjust height based on content */
-    margin: 20px;
-    display: block; /* Use block to control width and alignment more easily */
-    justify-content: flex-start; /* Align content to the start (left) */
-    align-items: flex-start;
-    text-align: left;
-}
-
-input {
+  }
+  
+  input {
     background-color: white;
     width: 100%;
     height: 12%;
@@ -44,17 +34,17 @@ input {
     margin: 10px;
     color: black;
     font-size: medium;
-}
-
-button {
+  }
+  
+  button {
     background-color: #FAA61A;
     color: black;
     margin: 10px;
     min-width: 150px;
     font-style: bold;
-}
-
-.searchBooks {
+  }
+  
+  .searchBooks {
     width: 100%;
     height: 7vh;
     display: flex;
@@ -62,113 +52,198 @@ button {
     align-content: start;
     padding: 5px;
     gap: 20px;
-}
-
-.searchBar {
+  }
+  
+  .searchBar {
     background-color: rgb(255, 255, 255);
     width: 50%;
     height: inherit;
     box-shadow: 2px 4px 6px rgba(0, 0, 0, 1);
     border-radius: 10px;
     border: 0px;
-}
-
-.categoryBar {
-    background-color: rgb(255, 255, 255);
-    width: 30%;
-    height: inherit;
-    box-shadow: 2px 4px 6px rgba(0, 0, 0, 1);
-    border-radius: 10px;
-    border: 0px;
-}
-
-.totalBooks {
-    width: 20%;
-    height: inherit;
-    display: inline;
-    gap: 10px;
-    margin-top: -40px;
-}
-
-.actions {
-    width: 15%;
-    height: 10vh;
-    align-self: flex-start;
-    
-}
-
-.btn {
+  }
+  
+  .totalBorrowed {
+    margin-left: 10px;
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+  }
+  
+  .totalBorrowed .label {
+    color: black;
+  }
+  
+  .totalBorrowed .label:nth-child(2) {
+    font-size: 100px;
+    margin-top: -10px;
+  }
+  
+  
+  .booksTable {
+    background-color: #031C3E;
+  }
+  
+  .booksTable tr {
+    background-color: #031C3E;
+  }
+  
+  
+  .btn {
     align-content: flex-start;
     justify-items: left;
-}
-
-.borrowingRecordsTable {
+  }
+  
+  .borrowedBooksTable {
     padding: 20px;
-    margin: 20px;
-    background-color: #fff;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-    /* width: calc(100% - 290px); */ /* Let's control width in the parent section */
-    overflow-x: auto;
-}
-
-.borrowingRecordsTable h2 {
-    color: #333;
-    margin-bottom: 15px;
+    overflow-y: auto;
+    width: 95%;
+    height: 70vh;
+    box-shadow: 2px 4px 6px rgba(0, 0, 0, 1);
+    border-radius: 10px;
+    gap: 40px;
     text-align: left;
-}
-
-.borrowingRecordsTable table {
+    display: block;
+    background-color: #031C3E;
+  }
+  
+  .borrowedBooksTable p {
+    color: white;
+  }
+  
+  .borrowedBooksTable table {
     width: 100%;
+    max-width: 100%;
     border-collapse: collapse;
-    font-size: 0.9em;
-}
-
-.borrowingRecordsTable th, .borrowingRecordsTable td {
-    border-bottom: 1px solid #ddd;
-    padding: 10px 8px;
+    table-layout: fixed;
+  }
+  
+  
+  .borrowedBooksTable td {
+    border-bottom: #ffffff;
     text-align: left;
-}
-
-.borrowingRecordsTable th {
-    background-color: #f8f8f8;
-    font-weight: bold;
+    font-size: 0.8em;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    padding: 8px 10px;
+  }
+  
+  .borrowedBooksTable td {
+    color: white;
+  }
+  
+  .borrowedBooksTable th {
+    text-align: left;
+    font-size: 0.8em;
+    overflow-wrap: break-word;
+    word-break: break-word;
     position: sticky;
     top: 0;
     z-index: 1;
-}
-
-.borrowingRecordsTable tbody tr:hover {
-    background-color: #f5f5f5;
-}
-
-.borrowingRecordsTable .return-btn {
-    background-color: #5cb85c; /* Green for return */
+    padding: 8px 10px;
     color: white;
-    border: none;
-    padding: 8px 12px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 0.8em;
-}
-
-.borrowingRecordsTable .return-btn:hover {
-    background-color: #4cae4c;
-}
-
-.borrowingRecordsTable .error {
+    background-color: #031C3E;
+  }
+  
+  .borrowedBooksTable th:not(:last-child),
+  .borrowedBooksTable td:not(:last-child) {
+    padding-right: 15px;
+  }
+  
+  .borrowedBooksTable th:nth-child(1),
+  .borrowedBooksTable td:nth-child(1) {
+    width: 8%;
+  }
+  
+  .borrowedBooksTable th:nth-child(2),
+  .borrowedBooksTable td:nth-child(2) {
+    width: 20%;
+  }
+  
+  .borrowedBooksTable th:nth-child(3),
+  .borrowedBooksTable td:nth-child(3) {
+    width: 13%;
+  }
+  
+  .borrowedBooksTable th:nth-child(4),
+  .borrowedBooksTable td:nth-child(4) {
+    width: 8%;
+  }
+  
+  .borrowedBooksTable th:nth-child(5),
+  .borrowedBooksTable td:nth-child(5) {
+    width: 15%;
+  }
+  
+  .borrowedBooksTable th:nth-child(6),
+  .borrowedBooksTable td:nth-child(6) {
+    width: 10%;
+  }
+  
+  .borrowedBooksTable th:nth-child(7),
+  .borrowedBooksTable td:nth-child(7) {
+    width: 10%;
+  }
+  
+  .borrowedBooksTable th:nth-child(8),
+  .borrowedBooksTable td:nth-child(8) {
+    width: 8%;
+    text-align: center;
+  }
+  
+  .borrowedBooksTable th:nth-child(9),
+  .borrowedBooksTable td:nth-child(9) {
+    width: 8%;
+    text-align: center;
+  }
+  
+  .borrowedBooksTable th:nth-child(10),
+  .borrowedBooksTable td:nth-child(10) {
+    width: 5%;
+  }
+  
+  .borrowedBooksTable th:nth-child(11),
+  .borrowedBooksTable td:nth-child(11) {
+    width: 10%;
+    text-align: center;
+  }
+  
+  .error {
     color: red;
     margin-top: 10px;
-}
-
-/* Adjust column widths if needed */
-.borrowingRecordsTable th:nth-child(1), .borrowingRecordsTable td:nth-child(1) { width: 15%; } /* User */
-.borrowingRecordsTable th:nth-child(2), .borrowingRecordsTable td:nth-child(2) { width: 30%; } /* Book Title */
-.borrowingRecordsTable th:nth-child(3), .borrowingRecordsTable td:nth-child(3) { width: 15%; } /* Borrow Date */
-.borrowingRecordsTable th:nth-child(4), .borrowingRecordsTable td:nth-child(4) { width: 15%; } /* Return Date */
-.borrowingRecordsTable th:nth-child(5), .borrowingRecordsTable td:nth-child(5) { width: 10%; text-align: center; } /* Returned */
-.borrowingRecordsTable th:nth-child(6), .borrowingRecordsTable td:nth-child(6) { width: 15%; text-align: center; } /* Actions */
-.borrowingRecordsTable tbody tr:hover {
-    background-color: #f1c16f; /* Light blue or any color you prefer */
-    cursor: pointer; /* Optional: Change cursor to indicate interactivity */
-}
+  }
+  
+  .borrowedBooksTable tbody tr td button {
+    padding: 5px 8px;
+    font-size: 0.7em;
+    max-width: 80%;
+    height: auto;
+    line-height: 1;
+    margin: 0px;
+  }
+  
+  .booksTable tbody tr td {
+    padding: 8px 10px;
+    background-color: #031C3E;
+  }
+  
+  .borrowedBooksTable .edit-btn,
+  .borrowedBooksTable .delete-btn {
+    padding: 5px 8px;
+    font-size: 0.7em;
+    min-width: 50px;
+    height: auto;
+    line-height: 1;
+    margin: 2px;
+  }
+  
+  .borrowedBooksTable tbody tr:hover {
+    background-color: #8c5902;
+    cursor: pointer;
+  }
+  
+  .rtn-btn {
+    background-color: #FAA61A;
+    color: black;
+  }
+  

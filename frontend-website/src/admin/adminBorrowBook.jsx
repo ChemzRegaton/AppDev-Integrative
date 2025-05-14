@@ -1,101 +1,121 @@
+// In AdminBorrowBook.jsx
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import logoImage from '../assets/LOGO_WORD.png';
 import { useNavigate } from 'react-router-dom';
-import './adminBookManage.css';
+import './adminBorrowBook.css'; // Corrected import path
 import Sidebar from './sideBar.jsx';
+import Message from './components/message.jsx'; // Adjust path as needed
 import AddBookPanel from './components/addBookPanel.jsx';
 import EditBookPanel from './components/editBookPanel.jsx';
+import { FaCheckCircle } from 'react-icons/fa'; // Import the check circle icon
 
-function AdminBookManage() {
+function AdminBorrowBook({ onBookReturned }) { // Receive the refresh function as a prop
     const [error, setError] = useState('');
     const [borrowingRecords, setBorrowingRecords] = useState([]);
+    const [borrowedBooksCount, setBorrowedBooksCount] = useState(0); // New state for borrowed book count
     const navigate = useNavigate();
     const authToken = localStorage.getItem('authToken');
     const [searchQuery, setSearchQuery] = useState('');
-    const [returnedFilter, setReturnedFilter] = useState(''); // To filter by returned/not returned
+    const [messageText, setMessageText] = useState('');
+    const [isMessageVisible, setIsMessageVisible] = useState(false);
 
-    useEffect(() => {
-        fetchAcceptedBorrowingRecords();
-    }, []);
 
     const fetchAcceptedBorrowingRecords = async () => {
         try {
-            const response = await axios.get('http://127.0.0.1:8000/api/library/borrowing-records/', { // Your API endpoint for all borrowing records
+            const response = await axios.get('http://127.0.0.1:8000/api/library/borrowing-records/', { // Fetch all borrowing records
                 headers: {
                     'Authorization': `Token ${authToken}`,
                 },
             });
-            setBorrowingRecords(response.data.borrowingRecords); // Assuming your API returns an object with a 'borrowingRecords' array
+            const activeBorrows = response.data.borrowingRecords.filter(record => !record.is_returned);
+            setBorrowingRecords(activeBorrows);
+            setBorrowedBooksCount(activeBorrows.length); // Set the count of currently borrowed books
         } catch (error) {
             console.error('Error fetching borrowing records:', error);
             setError('Failed to fetch borrowing records.');
         }
     };
 
-    const handleReturnBook = async (recordId) => {
-        if (window.confirm(`Are you sure this book has been returned?`)) {
-            try {
-                // Assuming you have an endpoint to mark a borrowing record as returned
-                await axios.patch(`http://127.0.0.1:8000/api/library/borrowing-records/${recordId}/return/`, {}, {
+    useEffect(() => {
+        fetchAcceptedBorrowingRecords();
+    }, []);
+
+    const handleReturnBook = async (recordId, bookId, borrowerUsername) => {
+        try {
+            const response = await axios.patch(
+                `http://127.0.0.1:8000/api/library/borrowing-records/${recordId}/return/`,
+                {},
+                {
                     headers: {
                         'Authorization': `Token ${authToken}`,
                     },
-                });
-                console.log(`Borrowing record with ID ${recordId} marked as returned.`);
-                fetchAcceptedBorrowingRecords(); // Refresh the list
-            } catch (error) {
-                console.error(`Error marking borrowing record ${recordId} as returned:`, error);
-                setError('Failed to update return status.');
+                }
+            );
+            console.log(`Borrowing record with ID ${recordId} marked as returned:`, response.data);
+            // Remove the returned record from the local state
+            setBorrowingRecords(borrowingRecords.filter(record => record.id !== recordId));
+            setBorrowedBooksCount(borrowedBooksCount - 1);
+            setMessageText(response.data.message);
+            setIsMessageVisible(true);
+
+            if (onBookReturned) {
+                onBookReturned(); // Call the function passed from UserHome
             }
+        } catch (error) {
+            console.error(`Error marking borrowing record ${recordId} as returned:`, error);
+            setError('Failed to update return status.');
+            
         }
     };
-
     const handleSearchChange = (event) => {
         setSearchQuery(event.target.value.toLowerCase());
     };
 
-    const handleReturnedFilterChange = (event) => {
-        setReturnedFilter(event.target.value);
+    const handleCloseMessage = () => {
+        setIsMessageVisible(false);
+        setMessageText('');
     };
+
 
     const filteredBorrowingRecords = borrowingRecords.filter(record => {
         const searchMatch =
             record.book_title.toLowerCase().includes(searchQuery) ||
             record.user.toLowerCase().includes(searchQuery); // Assuming 'user' is the username
 
-        const returnedMatch =
-            returnedFilter === '' ||
-            (returnedFilter === 'returned' && record.is_returned) ||
-            (returnedFilter === 'not_returned' && !record.is_returned);
-
-        return searchMatch && returnedMatch;
+        return searchMatch;
     });
+
+    const calculateDueDateInfo = (borrowDate, returnDate) => {
+        const today = new Date();
+        const due = new Date(returnDate); // Assuming returnDate is the due date
+        const timeDifference = due.getTime() - today.getTime();
+        const daysLeft = Math.ceil(timeDifference / (1000 * 3600 * 24));
+
+        if (daysLeft >= 0) {
+            return { text: `${daysLeft} day${daysLeft !== 1 ? 's' : ''} left`, overdue: false };
+        } else {
+            const daysPassed = Math.abs(daysLeft);
+            return { text: `${daysPassed} day${daysPassed !== 1 ? 's' : ''} overdue`, overdue: true };
+        }
+    };
 
     return (
         <div className='dashboard'>
             <Sidebar />
-            <section className='searchBooks'>
+            <section className='searchBooks' style={{ display: 'flex', marginBottom: '40px' }}>
                 <input
                     className='searchBar'
                     placeholder='Search by Book Title or Borrower'
                     value={searchQuery}
                     onChange={handleSearchChange}
                 />
-                <select
-                    className='categoryBar'
-                    value={returnedFilter}
-                    onChange={handleReturnedFilterChange}
-                >
-                    <option value="">Filter by Returned Status</option>
-                    <option value="returned">Returned</option>
-                    <option value="not_returned">Not Returned</option>
-                </select>
+                <section className='totalBorrowed' style={{ marginLeft: '10px', display: 'flex', flexDirection: 'column', textAlign: 'left' }}>
+                    <p className='label' style={{ color: 'black' }}>Borrowed Books</p>
+                    <p className='label' style={{ fontSize: '100px', marginTop: '-10px' }}>{borrowedBooksCount}</p>
+                </section>
             </section>
-            <section className='actions'>
-                {error && <p className='error'>{error}</p>}
-            </section>
-            <section className='booksTable'>
+            <section className='borrowedBooksTable'>
                 {!error && filteredBorrowingRecords.length > 0 && (
                     <table>
                         <thead>
@@ -104,36 +124,54 @@ function AdminBookManage() {
                                 <th>Borrower</th>
                                 <th>Title</th>
                                 <th>Borrow Date</th>
-                                <th>Return Date</th>
-                                <th>Returned</th>
+                                <th>Due Date</th> {/* Renamed to Due Date */}
+                                <th>Due Date Status</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {filteredBorrowingRecords.map(record => (
-                                <tr key={record.id}>
-                                    <td>{record.id}</td>
-                                    <td>{record.user}</td>
-                                    <td>{record.book_title}</td>
-                                    <td>{new Date(record.borrow_date).toLocaleDateString()}</td>
-                                    <td>{record.return_date ? new Date(record.return_date).toLocaleDateString() : 'Not Returned'}</td>
-                                    <td>{record.is_returned ? 'Yes' : 'No'}</td>
-                                    <td>
-                                        {!record.is_returned && (
-                                            <button className='rtn-btn' onClick={() => handleReturnBook(record.id)}>Mark as Returned</button>
-                                        )}
-                                    </td>
-                                </tr>
-                            ))}
+                            {filteredBorrowingRecords.map(record => {
+                                const dueDateInfo = calculateDueDateInfo(record.borrow_date, record.return_date); // Using return_date as due date
+                                return (
+                                    <tr key={record.id} className={dueDateInfo.overdue ? 'overdue-row' : ''}>
+                                        <td>{record.id}</td>
+                                        <td>{record.user}</td>
+                                        <td>{record.book_title}</td>
+                                        <td>{new Date(record.borrow_date).toLocaleDateString()}</td>
+                                        <td>{new Date(record.return_date).toLocaleDateString()}</td> {/* Displaying return_date as due date */}
+                                        <td>
+                                            {!record.is_returned && (
+                                                <span className={dueDateInfo.overdue ? 'overdue-text' : 'due-date-text'}>
+                                                    {dueDateInfo.text}
+                                                </span>
+                                            )}
+                                        </td>
+                                        <td>
+                                            {!record.is_returned && (
+                                                <button
+                                                    className='rtn-btn'
+                                                    onClick={() => handleReturnBook(record.id, record.book_id, record.user)}
+                                                >
+                                                    <FaCheckCircle className='return-icon' /> Mark as Returned
+                                                </button>
+                                            )}
+                                        </td>
+                                    </tr>
+                                );
+                            })}
                         </tbody>
                     </table>
                 )}
                 {!error && filteredBorrowingRecords.length === 0 && (
-                    <p>No borrowing records found.</p>
+                    <p>No active borrowing records found.</p>
                 )}
+                {isMessageVisible && (
+                    <Message message={messageText} onClose={handleCloseMessage} />
+                )}
+
             </section>
         </div>
     );
 }
 
-export default AdminBookManage;
+export default AdminBorrowBook;

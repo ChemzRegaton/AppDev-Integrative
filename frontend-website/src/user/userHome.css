@@ -54,6 +54,11 @@ button {
     font-style: bold;
 }
 
+button:hover{
+    background-color: #031C3E;
+    color: #ffffff;
+}
+
 .searchBooks {
     width: 100%;
     height: 7vh;
@@ -212,11 +217,6 @@ button {
     margin-left: 20%;
 }
 
-.book-request-button:hover {
-    background-color: #031C3E;
-    color: white;
-    box-shadow: 0 2px 4px rgb(255, 255, 255);
-}
 
 /* Responsive adjustments */
 @media (max-width: 768px) {

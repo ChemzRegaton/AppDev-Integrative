@@ -1,36 +1,176 @@
-
-
-section{
-    width: 50%;
-    height: 90vh;
-    margin: 1px;
+.received-messages-container {
+    flex: 1;
     display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    
-}
-
-input{
-    background-color: white;
+    flex-direction: column;
+    padding: 20px;
+    background-color: 'white';
+    border-radius: 8px;
     width: 100%;
-    height: 12%;
-    border-radius: 15px;
-    box-sizing: border-box;
-    min-width: 500px;
-    padding: 2px;
-    margin: 10px;
-    color: black;
-    font-size: medium;
 }
 
-button{
-    background-color: #FAA61A;
-    color: black;
-    margin: 10px;
-    min-width: 150px;;
-    font-style: bold;
+.received-messages-container h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #333;
+    display: flex;
+    align-items: center;
+    /* Vertically center the heading and badge */
+    gap: 10px;
+    /* Space between heading and badge */
 }
 
+.notification-badge {
+    background-color: red;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 10px;
+    font-size: 14px;
+}
 
+.message-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    max-height: 500px;
+    /* Set a max height for the message list */
+    overflow-y: auto;
+    background-color: white;
+}
 
+.message-item {
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border: 1px solid #ddd;
+    width: 90%;
+    background-color: #031C3E;
+    display: flex;
+    flex-direction: column;
+}
+
+.message-item.unread {
+    background-color: #f0f0f0;
+    /* Slightly different background for unread */
+    font-weight: bold;
+    background-color: #031C3E;
+}
+
+.message-item p {
+    margin-bottom: 5px;
+    color: #ffffff;
+}
+
+.message-item p strong {
+    color: #FAA61A;
+}
+
+.error {
+    color: red;
+    margin-top: 10px;
+}
+
+/* basic dashboard layout  */
+.dashboard {
+    display: block;
+    min-height: 100vh;
+    background-color: #f0f0f0;
+
+}
+
+.message-header {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: -30px;
+    font-size: small;
+    width: 93%;
+}
+
+.message-content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  align-items: start;
+  z-index: 1;
+}
+
+/* New styles for the "View Full Message" link and overlay */
+.view-full-message-link {
+    color: blue;
+    text-decoration: underline;
+    cursor: pointer;
+    margin-top: 10px;
+    display: inline-block;
+    /* Important for width/height if needed */
+    z-index: 2;
+}
+
+.view-full-message-link:hover {
+    color: darkblue;
+}
+
+.full-message-overlay {
+    position: fixed;
+    /* Use fixed positioning */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    /* Semi-transparent background */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    /* Ensure it's on top of everything */
+    visibility: hidden;
+    /* Initially hidden */
+    opacity: 0;
+    transition: visibility 0s, opacity 0.3s;
+    /* Smooth transition */
+}
+
+.full-message-overlay.active {
+    visibility: visible;
+    opacity: 1;
+}
+
+.full-message-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 50%;
+    /* Adjust as needed */
+    max-height: 80%;
+    /* Limit the height */
+    overflow-y: auto;
+    /* Add scrollbar if content overflows */
+    position: relative;
+    /* Needed for absolute positioning of close button */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.full-message-content h2 {
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.full-message-content p {
+    margin-bottom: 10px;
+    color: #555;
+    white-space: pre-wrap;
+}
+
+.full-message-content .close-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 20px;
+    cursor: pointer;
+    color: #888;
+    text-decoration: none;
+}
+
+.full-message-content .close-button:hover {
+    color: #222;
+}
