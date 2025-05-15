@@ -437,7 +437,7 @@ class BorrowingRecordListView(generics.ListAPIView):
 
 class UserBorrowingRecordListView(generics.ListAPIView):
     serializer_class = BorrowingRecordSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, permissions.AllowAny]
 
     def get_queryset(self):
         return BorrowingRecord.objects.filter(user=self.request.user)
