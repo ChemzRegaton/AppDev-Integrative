@@ -59,4 +59,7 @@ urlpatterns = [
 
     # Deletion via JSON
     path('books/delete_json/', DeleteBookByJSONView.as_view(), name='delete-book-json'),
+    
+    path('users/<str:username>/decrement-request/', views.decrement_request_count),
+
 ]
