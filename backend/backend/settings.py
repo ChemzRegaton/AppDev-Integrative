@@ -22,9 +22,7 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-# settings.py
-MEDIA_URL = 'https://appdev-integrative-28.onrender.com/media/'  # Instead of '/media/' or http
-
+MEDIA_URL = '/media/'
 
 SECRET_KEY = 'django-insecure-5aa&95wd8!rvgjr15k33@+cl-q+(v=^=!d6e_*60f01xnqdsz1'
 DEBUG = True
