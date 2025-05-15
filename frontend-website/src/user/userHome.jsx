@@ -36,7 +36,7 @@ function UserHome() {
         setLoading(true);
         setError('');
         try {
-            const profileResponse = await axios.get('http://appdev-integrative-28.onrender.com:8000/api/auth/profile/', {
+            const profileResponse = await axios.get('https://appdev-integrative-28.onrender.com/api/auth/profile/', {
                 headers: {
                     'Authorization': `Token ${authToken}`,
                 },
@@ -45,7 +45,7 @@ function UserHome() {
             const isInfoFilled = profileResponse.data.fullname && profileResponse.data.role && profileResponse.data.course && profileResponse.data.birthdate && profileResponse.data.address;
             setAddBookPanelVisible(!isInfoFilled);
 
-            const booksResponse = await axios.get('http://appdev-integrative-28.onrender.com:8000/api/library/books/', {
+            const booksResponse = await axios.get('https://appdev-integrative-28.onrender.com/api/library/books/', {
                 headers: {
                     'Authorization': `Token ${authToken}`,
                 },
@@ -55,7 +55,7 @@ function UserHome() {
             setFilteredBooks(booksResponse.data.books);
 
             // Fetch borrowed books count
-            const borrowedBooksResponse = await axios.get('http://appdev-integrative-28.onrender.com:8000/api/library/borrowing-records/', {
+            const borrowedBooksResponse = await axios.get('https://appdev-integrative-28.onrender.com/api/library/borrowing-records/', {
                 headers: {
                     'Authorization': `Token ${authToken}`,
                 },
@@ -149,7 +149,7 @@ function UserHome() {
 
         try {
             const response = await axios.post(
-                'http://appdev-integrative-28.onrender.com:8000/api/library/requests/',
+                'https://appdev-integrative-28.onrender.com/api/library/requests/',
                 { book: bookId },
                 {
                     headers: {
@@ -197,7 +197,7 @@ function UserHome() {
 
             // Re-fetch borrowed books count
             try {
-                const borrowedBooksResponse = await axios.get('http://appdev-integrative-28.onrender.com:8000/api/library/borrowing-records/', {
+                const borrowedBooksResponse = await axios.get('https://appdev-integrative-28.onrender.com/api/library/borrowing-records/', {
                     headers: {
                         'Authorization': `Token ${authToken}`,
                     },

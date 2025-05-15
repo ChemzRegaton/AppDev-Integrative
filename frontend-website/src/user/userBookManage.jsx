@@ -29,7 +29,7 @@ function UserBookManage() {
 
     const fetchBooks = async () => {
         try {
-            const response = await axios.get('http://appdev-integrative-28.onrender.com:8000/api/library/books/');
+            const response = await axios.get('https://appdev-integrative-28.onrender.com/api/library/books/');
             setBooks(response.data.books);
             const totalQuantity = response.data.books.reduce((sum, book) => sum + book.quantity, 0);
             setTotalBookQuantity(totalQuantity);
@@ -42,7 +42,7 @@ function UserBookManage() {
     const handleDeleteBook = async (bookId) => {
         if (window.confirm(`Are you sure you want to delete book with ID: ${bookId}?`)) {
             try {
-                await axios.delete(`http://127.0.0.1:8000/api/library/books/${bookId}/`);
+                await axios.delete(`https://appdev-integrative-28.onrender.com/api/library/books/${bookId}/`);
                 console.log(`Book with ID ${bookId} deleted successfully.`);
                 fetchBooks();
                 setGeneralMessage('Book deleted successfully!');
@@ -116,7 +116,7 @@ function UserBookManage() {
 
         try {
             const response = await axios.post(
-                'http://localhost:8000/api/library/requests/',
+                'https://appdev-integrative-28.onrender.com/api/library/requests/',
                 { book: bookId },
                 {
                     headers: {

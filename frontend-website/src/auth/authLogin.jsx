@@ -10,34 +10,41 @@ function Login() {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-const handleLogin = async (e) => {
-    e.preventDefault();
-    console.log("Sending username:", username);
-    console.log("Sending password:", password);
-
+  const handleLogin = async () => {
+    setError('');
     try {
-      const response = await fetch("https://appdev-integrative-28.onrender.com/api/auth/login/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      console.log("Sending username:", username);
+      console.log("Sending password:", password);
+      const response = await axios.post(
+        'https://appdev-integrative-28.onrender.com/api/auth/login/',
+        {
+          username: username,
+          password: password,
         },
-        body: JSON.stringify({
-          username,
-          password,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Login failed: ${response.status}`);
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+  
+      if (response.data && response.data.token) {
+        localStorage.setItem('authToken', response.data.token);
+  
+       
+        if (response.data.is_superuser) {
+          navigate('/admin'); 
+        } else {
+          navigate('/user');  
+        }
+      } else {
+        setError('Invalid credentials');
       }
-
-      const data = await response.json();
-      console.log("Login successful:", data);
-      // Store token, redirect, etc.
-    } catch (error) {
-      console.error("Login error:", error.message);
+    } catch (err) {
+      setError(err.response?.data?.message || 'Login failed');
     }
-  };  
+  };
+  
 
   const goToSignup = () => {
     navigate('/signup');

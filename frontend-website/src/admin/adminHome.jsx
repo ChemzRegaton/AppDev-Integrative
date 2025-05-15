@@ -33,8 +33,11 @@ function AdminHome() {
 
     const fetchTotalBooks = async () => {
         try {
-            const response = await axios.get('http://appdev-integrative-28.onrender.com:8000/api/library/books/');
+            const response = await axios.get('https://appdev-integrative-28.onrender.com/api/library/books/');
             setTotalBooks(response.data.total_books);
+            console.log("Books Response:", response.data);
+
+
         } catch (error) {
             console.error('Error fetching total books:', error);
             setError('Failed to fetch total books.');
@@ -44,13 +47,14 @@ function AdminHome() {
     const fetchTotalBorrowedBooks = async () => {
         const token = localStorage.getItem('authToken');
         try {
-            const response = await axios.get('http://appdev-integrative-28.onrender.com:8000/api/library/borrowing-records/', {
+            const response = await axios.get('https://appdev-integrative-28.onrender.com/api/library/borrowing-records/', {
                 headers: {
                     'Authorization': `Token ${token}`,
                 },
             });
             setTotalBorrowedBooks(response.data.totalBorrowedRecords);
             setAllBorrowingRecords(response.data.borrowingRecords);
+            console.log("Borrow Records Response:", response.data);
         } catch (error) {
             console.error('Error fetching borrowing records:', error);
         }
@@ -58,7 +62,7 @@ function AdminHome() {
 
     const fetchBorrowRequests = async () => {
         try {
-            const response = await axios.get('http://appdev-integrative-28.onrender.com:8000/api/library/admin/requests/pending/', {
+            const response = await axios.get('https://appdev-integrative-28.onrender.com/api/library/admin/requests/pending/', {
                 headers: {
                     'Authorization': `Token ${authToken}`,
                 },
@@ -90,7 +94,7 @@ function AdminHome() {
     const handleAcceptRequest = async (requestId) => {
         try {
             const response = await axios.patch(
-                `http://appdev-integrative-28.onrender.com:8000/api/library/requests/${requestId}/accept/`,
+                `https://appdev-integrative-28.onrender.com/api/library/requests/${requestId}/accept/`,
                 {},
                 {
                     headers: {

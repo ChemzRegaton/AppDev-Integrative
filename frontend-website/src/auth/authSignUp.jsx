@@ -20,7 +20,7 @@ function SignUp() {
 
     setError('');
 
-      const response = await axios.post('http://appdev-integrative-28.onrender.com:8000/api/auth/register/', {
+      const response = await axios.post('https://appdev-integrative-28.onrender.com/api/auth/register/', {
         username,
         email,
         password,
@@ -29,12 +29,12 @@ function SignUp() {
 
       if (response.status === 201 || response.status === 200) {
         alert('Registration successful! Please log in.');
-        navigate('/login');
+        navigate('/');
       }
   };
 
   const goToLogin = () => {
-    navigate('/login');
+    navigate('/');
   };
 
   return (

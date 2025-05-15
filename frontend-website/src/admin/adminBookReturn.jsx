@@ -19,7 +19,7 @@ function AdminBorrowRequest() {
 
     const fetchPendingBorrowRequests = async () => {
         try {
-            const response = await axios.get('http://appdev-integrative-28.onrender.com:8000/api/library/admin/requests/pending/', {
+            const response = await axios.get('https://appdev-integrative-28.onrender.com/api/library/admin/requests/pending/', {
                 headers: {
                     'Authorization': `Token ${authToken}`,
                 },
@@ -34,7 +34,7 @@ function AdminBorrowRequest() {
     const handleAcceptRequest = async (requestId) => {
         try {
             const response = await axios.patch(
-                `http://localhost:8000/api/library/requests/${requestId}/accept/`,
+                `https://appdev-integrative-28.onrender.com/api/library/requests/${requestId}/accept/`,
                 {},
                 {
                     headers: {
@@ -63,7 +63,7 @@ function AdminBorrowRequest() {
     const handleRejectRequest = async (requestId) => {
         try {
             const response = await axios.patch(
-                `http://localhost:8000/api/library/borrow_requests/${requestId}/reject/`, // Verify your reject endpoint
+                `https://appdev-integrative-28.onrender.com/api/library/borrow_requests/${requestId}/reject/`, // Verify your reject endpoint
                 {},
                 {
                     headers: {

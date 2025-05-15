@@ -45,7 +45,7 @@ function AdditionalInfo({ onClose, onProfileUpdated, initialProfileData }) {
                 console.error('Authentication token not found.');
                 return;
             }
-            const response = await axios.get('http://127.0.0.1:8000/api/auth/profile/', {
+            const response = await axios.get('https://appdev-integrative-28.onrender.com/api/auth/profile/', {
                 headers: {
                     'Authorization': `Token ${token}`,
                 },
@@ -93,7 +93,7 @@ function AdditionalInfo({ onClose, onProfileUpdated, initialProfileData }) {
             };
     
             const response = await axios.put(
-                'http://127.0.0.1:8000/api/auth/profile/update/',
+                'https://appdev-integrative-28.onrender.com/api/auth/profile/update/',
                 profilePayload,
                 {
                     headers: {

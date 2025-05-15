@@ -16,7 +16,7 @@ function AdminReturnedBook() {
 
   const fetchReturnedBorrowingRecords = async () => {
     try {
-      const response = await axios.get('http://appdev-integrative-28.onrender.com:8000/api/library/borrowing-records/', {
+      const response = await axios.get('https://appdev-integrative-28.onrender.com/api/library/borrowing-records/', {
         headers: {
           'Authorization': `Token ${authToken}`,
         },

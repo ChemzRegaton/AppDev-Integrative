@@ -19,23 +19,14 @@ import socket
 import os
 from pathlib import Path
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
 SECRET_KEY = 'django-insecure-5aa&95wd8!rvgjr15k33@+cl-q+(v=^=!d6e_*60f01xnqdsz1'
 DEBUG = True
-import os
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'appdev-integrative-28.onrender.com', '192.168.254.106']
-RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
-if RENDER_EXTERNAL_HOSTNAME:
-    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
-PORT = os.environ.get('PORT')
-if PORT:
-    ALLOWED_HOSTS.append(f"0.0.0.0:{PORT}") # Or just "0.0.0.0" might suffice
-    ALLOWED_HOSTS.append(f":{PORT}")
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '10.0.2.2', '192.168.83.92', '192.168.29.92', '192.168.254.112', '192.168.51.92', '192.168.106.92', '192.168.181.92', '172.20.143.33', '172.20.143.191', '172.22.164.156', '192.168.38.92',  '192.168.38.92']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -82,11 +73,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:8000",
     "http://10.0.2.2:8081",
     "http://localhost:5173",
-    "http://localhost:5174",
-    "exp://192.168.254.106:8081",
-    
 ]
-
 CORS_ALLOW_METHODS = ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH']
 CORS_ALLOW_HEADERS = ['Accept', 'Accept-Encoding', 'Authorization', 'Content-Type', 'DNT', 'Origin', 'User-Agent', 'X-Requested-With']
 CORS_ALLOW_CREDENTIALS = True
@@ -111,7 +98,7 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),  # Use os.path.join()
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
@@ -156,7 +143,6 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 STATIC_URL = 'static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # SendGrid Configuration
@@ -167,7 +153,7 @@ EMAIL_HOST_PASSWORD = 'SG.NXB5ktkcS2KxdgksLi7CUg.PDNiqxQGcB-aL_YELf-QXGYsAmD2VZo
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-DEFAULT_FROM_EMAIL = 'librarymanagementsystem.ustp@gmail.com' # Replace with your desired "from" email address
+DEFAULT_FROM_EMAIL = 'librarymanagementsystem.ustp@gmail.com'  # Replace with your desired "from" email address
 
 def get_local_ip():
     try:
@@ -175,7 +161,7 @@ def get_local_ip():
         host_ip = socket.gethostbyname(host_name)
         return host_ip
     except socket.gaierror:
-        return "127.0.0.1" # Default to localhost if the IP can't be resolved
+        return "127.0.0.1"  # Default to localhost if the IP can't be resolved
 
-API_BASE_URL = f"http://{get_local_ip()}:8000" # Dynamically set the IP
+API_BASE_URL = f"http://{get_local_ip()}:8000"  # Dynamically set the IP
 #print(API_BASE_URL) #for debugging

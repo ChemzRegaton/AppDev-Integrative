@@ -28,7 +28,7 @@ function EditBookPanel({ bookId, onClose }) {
                 setIsSubmitting(true);
                 setErrorMessage('');
                 try {
-                    const response = await axios.get(`http://127.0.0.1:8000/api/library/books/${bookId}/`);
+                    const response = await axios.get(`https://appdev-integrative-28.onrender.com/api/library/books/${bookId}/`);
                     const bookData = response.data;
                     setEditingBook({
                         title: bookData.title || '',
@@ -89,7 +89,7 @@ function EditBookPanel({ bookId, onClose }) {
             }
 
             const response = await axios.put( // Or axios.patch
-                `http://127.0.0.1:8000/api/library/books/${bookId}/`,
+                `https://appdev-integrative-28.onrender.com/api/library/books/${bookId}/`,
                 formData,
                 {
                     headers: {

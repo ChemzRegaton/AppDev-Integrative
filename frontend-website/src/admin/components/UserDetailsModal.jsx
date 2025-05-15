@@ -17,7 +17,7 @@ function UserDetailsModal({ user, onClose }) {
                     {user.profile_picture ? (
                         <div className="modalProfilePictureContainer">
                             <img
-                                src={`http://127.0.0.1:8000${user.profile_picture}`}
+                                src={`https://appdev-integrative-28.onrender.com${user.profile_picture}`}
                                 alt={`${user.username}'s Profile`}
                                 className="modalLargeProfilePicture"
                             />

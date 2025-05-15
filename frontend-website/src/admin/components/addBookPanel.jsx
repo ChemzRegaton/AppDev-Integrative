@@ -45,7 +45,7 @@ function AddBookPanel({ onClose }) {
         formData.append(key, newBook[key]);
       }
 
-      const response = await axios.post('http://127.0.0.1:8000/api/library/books/', formData, {
+      const response = await axios.post('https://appdev-integrative-28.onrender.com/api/library/books/', formData, {
         headers: {
           'Content-Type': 'multipart/form-data', // Important for file uploads
         },
