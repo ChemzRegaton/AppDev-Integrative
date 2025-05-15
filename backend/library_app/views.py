@@ -488,17 +488,3 @@ def get_api_base_url(request):
     """
     return Response({'api_base_url': settings.API_BASE_URL})
 
-@api_view(['PATCH'])
-@permission_classes([IsAdminUser])
-def decrement_request_count(request, username):
-    CustomUser = get_user_model()
-    
-    try:
-        user = CustomUser.objects.get(username=username)
-        if user.request_count > 0:
-            user.request_count -= 1
-            user.save()
-            return Response({'message': 'Request count decremented.'}, status=200)
-        return Response({'message': 'Request count already 0.'}, status=200)
-    except CustomUser.DoesNotExist:
-        return Response({'error': 'User not found.'}, status=404)
