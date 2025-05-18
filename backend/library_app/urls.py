@@ -55,6 +55,8 @@ urlpatterns = [
     path('books/delete_json/', DeleteBookByJSONView.as_view(), name='delete-book-json'),
     
     # Admin Message Reply
-    path('admin/messages/<int:message_id>/reply/', views.reply_to_message, name='reply_to_message'),
+     path('admin/messages/<int:message_id>/reply/',
+         AdminMessageReplyView.as_view(),
+         name='admin-message-reply'),
 
 ]
