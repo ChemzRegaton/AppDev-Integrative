@@ -15,4 +15,5 @@ urlpatterns = [
     path('admin/messages/', AdminReceiveMessagesView.as_view(), name='admin-receive-messages'),
     path('admin/messages/<int:pk>/', AdminMessageDetailView.as_view(), name='admin-message-detail'),
     path('admin/messages/unread/count/', AdminUnreadMessagesCountView.as_view(), name='admin-unread-messages-count'),
+    
 ]

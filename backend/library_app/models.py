@@ -2,6 +2,8 @@ from django.db import models
 from django.conf import settings
 from django.db.models import Sum
 from django.utils import timezone
+from auth_app.models import CustomUser
+
 
 class Book(models.Model):
     book_id = models.CharField(max_length=8, primary_key=True, unique=True, editable=False, default='generate_book_id')
@@ -130,3 +132,24 @@ class Notification(models.Model):
 
     def __str__(self):
         return f"Notification: {self.message[:50]}"
+    
+
+class Reply(models.Model):
+    message = models.ForeignKey('library_app.Message', on_delete=models.CASCADE, related_name='replies')
+    content = models.TextField()
+    sent_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Reply to Message ID {self.message.id}"
+
+
+    
+class Message(models.Model):
+    sender = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='sent_messages')
+    recipient = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='received_messages')
+    content = models.TextField()
+    sent_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"From {self.sender.username} to {self.recipient.username} - {self.sent_at}"
+

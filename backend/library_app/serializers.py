@@ -3,6 +3,7 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 from .models import Book, Request, BorrowingRecord, BorrowRequest, Notification
 from auth_app.models import CustomUser 
+from .models import Reply
 
 class BookSerializer(serializers.ModelSerializer):
     book_id = serializers.CharField(read_only=True)
@@ -74,8 +75,13 @@ class NotificationSerializer(serializers.ModelSerializer):
     def get_book_title(self, obj):
         return obj.book.title if obj.book else None
 
+
     
-class ReplySerializer(serializers.Serializer):
-    reply_message = serializers.CharField(required=True, max_length=500)  # Adjust length as needed
+
+class ReplySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Reply
+        fields = ['id', 'message', 'responder', 'content', 'created_at']
+        read_only_fields = ['id', 'responder', 'created_at']
 
 
