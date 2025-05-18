@@ -64,12 +64,18 @@ class BorrowingRecordSerializer(serializers.ModelSerializer):
 
 class NotificationSerializer(serializers.ModelSerializer):
     book_title = serializers.SerializerMethodField()
+    reply_message = serializers.CharField(required=False, allow_blank=True)
 
     class Meta:
         model = Notification
-        fields = ['id', 'message', 'book', 'book_title', 'status', 'created_at']
+        fields = ['id', 'message', 'book', 'book_title', 'status', 'created_at', 'reply_message']
         read_only_fields = ['id', 'created_at']
 
     def get_book_title(self, obj):
         return obj.book.title if obj.book else None
+
+    
+class ReplySerializer(serializers.Serializer):
+    reply_message = serializers.CharField(required=True, max_length=500)  # Adjust length as needed
+
 
