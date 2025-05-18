@@ -502,3 +502,18 @@ def decrement_request_count(request, username):
         return Response({'message': 'Request count already 0.'}, status=200)
     except CustomUser.DoesNotExist:
         return Response({'error': 'User not found.'}, status=404)
+
+class BorrowRequestCreateView(generics.CreateAPIView):
+    queryset = BorrowRequest.objects.all()
+    serializer_class = BorrowRequestSerializer
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        user = self.request.user
+        active_requests_count = BorrowRequest.objects.filter(user=user, status='pending').count()
+
+        if active_requests_count >= 3:
+            raise serializers.ValidationError("You have reached the maximum of 3 active borrow requests.")
+
+        serializer.save(user=user)
+
