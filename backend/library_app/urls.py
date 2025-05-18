@@ -1,6 +1,10 @@
 from django.urls import path
 from . import views
 from .views import (
+    # … other imports …,
+    reply_to_message,
+)
+from .views import (
     TotalBookCount,
     BookRetrieveUpdateDestroyView,
     DeleteBookByJSONView,
@@ -58,5 +62,11 @@ urlpatterns = [
      path('admin/messages/<int:message_id>/reply/',
          AdminMessageReplyView.as_view(),
          name='admin-message-reply'),
+     
+     path(
+        'admin/messages/<int:message_id>/reply/',
+        reply_to_message,
+        name='reply-to-message'
+    ),
 
 ]
