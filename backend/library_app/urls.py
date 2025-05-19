@@ -21,7 +21,8 @@ from .views import (
     PendingBorrowRequestListView,
     DeleteAllBorrowRequestsView,
     reply_to_message,
-    get_user_request_count
+    get_user_request_count,
+    reset_user_request_count
     # ← import your new function view
 )
 
@@ -67,4 +68,6 @@ urlpatterns = [
       get_user_request_count,
       name='user-request-count'
     ),
+    
+    path('admin/reset-user-request-count/<int:user_id>/', reset_user_request_count, name='reset-user-request-count'),
 ]
