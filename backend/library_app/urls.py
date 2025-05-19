@@ -20,7 +20,9 @@ from .views import (
     BorrowRequestCreateView,
     PendingBorrowRequestListView,
     DeleteAllBorrowRequestsView,
-    reply_to_message,              # ← import your new function view
+    reply_to_message,
+    get_user_request_count
+    # ← import your new function view
 )
 
 urlpatterns = [
@@ -58,5 +60,11 @@ urlpatterns = [
         'admin/messages/<int:message_id>/reply/',
         reply_to_message,
         name='reply-to-message'
+    ),
+    
+    path(
+      'user/request-count/',
+      get_user_request_count,
+      name='user-request-count'
     ),
 ]
