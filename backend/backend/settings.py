@@ -81,14 +81,6 @@ CORS_ALLOW_METHODS = ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH']
 CORS_ALLOW_HEADERS = ['Accept', 'Accept-Encoding', 'Authorization', 'Content-Type', 'DNT', 'Origin', 'User-Agent', 'X-Requested-With']
 CORS_ALLOW_CREDENTIALS = True
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        # CHANGE THIS LINE: Point NAME to your persistent disk's mount path
-        'NAME': os.path.join('/var/data/', 'db.sqlite3'),
-    }
-}
-
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -106,12 +98,14 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'backend.wsgi.application'
 
+# ...
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3', # Or os.path.join(BASE_DIR, 'db.sqlite3')
     }
 }
+# ...
 
 AUTH_PASSWORD_VALIDATORS = [
     {
