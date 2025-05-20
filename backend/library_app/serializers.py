@@ -76,7 +76,11 @@ class NotificationSerializer(serializers.ModelSerializer):
         return obj.book.title if obj.book else None
 
 
-    
+class AdminReplyInputSerializer(serializers.Serializer):
+    """
+    A serializer to validate the content of an admin's reply.
+    """
+    content = serializers.CharField(max_length=1000) # Ensure you have a max_length suitable for replies
 
 class ReplySerializer(serializers.ModelSerializer):
     class Meta:
