@@ -476,36 +476,42 @@ class NotificationListView(generics.ListAPIView):
     def get_queryset(self):
         return Notification.objects.filter(user=self.request.user).order_by('-created_at')
 
-class AdminMessageReplyView(APIView):
+class AdminMessageReplyView(views.APIView):
+    """
+    API view for admin users to reply to user messages.
+    Creates a new Notification for the original sender.
+    """
+    permission_classes = [IsAdminUser]
+
     def post(self, request, message_id):
-        # Retrieve the original notification (acting as the message)
-        try:
-            notification = Notification.objects.get(id=message_id)
-        except Notification.DoesNotExist:
-            return Response({'error': 'Notification not found.'}, status=status.HTTP_404_NOT_FOUND)
+        # Get the original Message object the admin is replying to
+        original_message = get_object_or_404(Message, id=message_id)
 
-        # Serialize the reply message
-        serializer = ReplySerializer(data=request.data)
+        # Use the AdminReplyInputSerializer for validation of the reply content
+        serializer = AdminReplyInputSerializer(data=request.data)
+
         if serializer.is_valid():
-            reply_message = serializer.validated_data['reply_message']
+            reply_content = serializer.validated_data['content']
 
-            # Create a new notification for the reply
-            new_notification = Notification.objects.create(
-                message=reply_message,  # This is the reply message
-                book=None,  # Adjust based on your requirements (e.g., associated book or other info)
-                status='replied',  # Adjust status as needed
-                created_at=timezone.now(),  # Automatically uses current time
-                user=notification.user,  # Send reply to the user who initially sent the notification
-                reply_message=reply_message  # Store the reply in the Notification
+            # Create a new Notification for the user who sent the original message
+            Notification.objects.create(
+                user=original_message.sender,  # Send the notification to the user who sent the original message
+                message=f"Admin replied to your message: \"{reply_content}\"",
+                status='admin_reply',  # A distinct status for admin replies
+                # If you have a 'book' field in Notification and the message is book-related,
+                # you might link it here: book=original_message.book (if Message has a book field)
             )
 
-            # Optionally, you can mark the original notification as 'replied' or handle its status if needed
-            notification.status = 'replied'
-            notification.save()
+            # Optional: Mark the original message as replied to for admin tracking
+            # You would need to add an 'is_replied' or 'status' field to your Message model
+            # original_message.status = 'replied'
+            # original_message.save()
 
-            return Response({'success': 'Reply sent successfully!', 'notification_id': new_notification.id}, status=status.HTTP_201_CREATED)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {'success': 'Reply sent successfully! User has been notified.'},
+                status=status.HTTP_201_CREATED
+            )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET'])
 def get_api_base_url(request):

@@ -22,7 +22,8 @@ from .views import (
     DeleteAllBorrowRequestsView,
     reply_to_message,
     get_user_request_count,
-    reset_user_request_count
+    reset_user_request_count,
+    AdminMessageReplyView
     # ← import your new function view
 )
 
@@ -59,7 +60,7 @@ urlpatterns = [
     # ——— NEW: reply to a message ———
     path(
         'admin/messages/<int:message_id>/reply/',
-        reply_to_message,
+        AdminMessageReplyView.as_view(), # Use .as_view() for class-based views
         name='reply-to-message'
     ),
     
