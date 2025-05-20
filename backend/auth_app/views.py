@@ -226,3 +226,7 @@ def get_api_base_url(request):
     Returns the API base URL from Django settings.
     """
     return Response({'api_base_url': settings.API_BASE_URL})
+
+@api_view(['GET'])
+def get_request_count(request):
+    return Response({'requestCount': request.user.request_count})

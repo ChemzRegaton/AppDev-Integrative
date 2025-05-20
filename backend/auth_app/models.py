@@ -2,6 +2,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from .managers import CustomUserManager  # Import CustomUserManager
+from django.utils import timezone
 from django.conf import settings
 import uuid
 
@@ -19,6 +20,7 @@ class CustomUser(AbstractUser):
     gender = models.CharField(max_length=10, blank=True, null=True) # Add gender
     section = models.CharField(max_length=50, blank=True, null=True) # Add section
     school_year = models.CharField(max_length=20, blank=True, null=True) # Add school year
+    request_count = models.IntegerField(default=0)
     
 
     objects = CustomUserManager()  # Use CustomUserManager
@@ -51,10 +53,14 @@ class BookBorrowing(models.Model):
 
 
 class ContactMessage(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='sent_messages')
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, # Prefer settings.AUTH_USER_MODEL for consistency
+        on_delete=models.CASCADE,
+        related_name='contact_messages' # This is the unique related_name
+    )
     subject = models.CharField(max_length=255)
-    message = models.TextField()
-    sent_at = models.DateTimeField(auto_now_add=True)
+    content = models.TextField() # Keeping this field name for consistency with your last definition
+    sent_at = models.DateTimeField(default=timezone.now)
     is_read = models.BooleanField(default=False)
     response = models.TextField(blank=True, null=True)
     responded_at = models.DateTimeField(blank=True, null=True)
