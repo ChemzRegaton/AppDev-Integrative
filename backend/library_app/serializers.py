@@ -3,6 +3,7 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 from .models import Book, Request, BorrowingRecord, BorrowRequest, Notification
 from auth_app.models import CustomUser 
+from .models import Reply
 
 class BookSerializer(serializers.ModelSerializer):
     book_id = serializers.CharField(read_only=True)
@@ -64,12 +65,27 @@ class BorrowingRecordSerializer(serializers.ModelSerializer):
 
 class NotificationSerializer(serializers.ModelSerializer):
     book_title = serializers.SerializerMethodField()
+    reply_message = serializers.CharField(required=False, allow_blank=True)
 
     class Meta:
         model = Notification
-        fields = ['id', 'message', 'book', 'book_title', 'status', 'created_at']
+        fields = ['id', 'message', 'book', 'book_title', 'status', 'created_at', 'reply_message']
         read_only_fields = ['id', 'created_at']
 
     def get_book_title(self, obj):
         return obj.book.title if obj.book else None
+
+
+class AdminReplyInputSerializer(serializers.Serializer):
+    """
+    A serializer to validate the content of an admin's reply.
+    """
+    content = serializers.CharField(max_length=1000) # Ensure you have a max_length suitable for replies
+
+class ReplySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Reply
+        fields = ['id', 'message', 'responder', 'content', 'created_at']
+        read_only_fields = ['id', 'responder', 'created_at']
+
 
