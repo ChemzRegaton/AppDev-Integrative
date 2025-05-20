@@ -20,6 +20,7 @@ class CustomUser(AbstractUser):
     gender = models.CharField(max_length=10, blank=True, null=True) # Add gender
     section = models.CharField(max_length=50, blank=True, null=True) # Add section
     school_year = models.CharField(max_length=20, blank=True, null=True) # Add school year
+    request_count = models.IntegerField(default=0)
     
 
     objects = CustomUserManager()  # Use CustomUserManager
