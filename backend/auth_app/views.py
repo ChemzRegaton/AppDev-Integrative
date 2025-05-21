@@ -5,7 +5,9 @@ from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from django.contrib.auth import authenticate, get_user_model
 from django.shortcuts import get_object_or_404
+from rest_framework.decorators import api_view, permission_classes
 from .models import ContactMessage
+from django.utils import timezone
 from .serializers import ContactMessageSerializer
 
 from .serializers import (
@@ -230,3 +232,58 @@ def get_api_base_url(request):
 @api_view(['GET'])
 def get_request_count(request):
     return Response({'requestCount': request.user.request_count})
+
+class AdminMessageReplyView(generics.UpdateAPIView): # UpdateAPIView is good for partial updates
+    queryset = ContactMessage.objects.all()
+    serializer_class = ContactMessageSerializer # Can be a simpler serializer if only sending reply
+    permission_classes = [IsAuthenticated] # Add IsAdminUser if you have it: [IsAuthenticated, IsAdminUser]
+    lookup_field = 'pk' # This tells DRF to use 'pk' (primary key) from the URL for lookup
+
+    # We'll override the update method or create_method if you prefer a different approach
+    # For a POST request to update, overriding post is common for specific actions
+    def post(self, request, *args, **kwargs):
+        message = self.get_object() # Gets the ContactMessage instance based on the 'pk' in the URL
+
+        reply_text = request.data.get('reply') # Get the 'reply' data from the frontend
+
+        if not reply_text:
+            return Response({"detail": "Reply cannot be empty."}, status=status.HTTP_400_BAD_REQUEST)
+
+        message.response = reply_text
+        message.responded_at = timezone.now()
+        message.is_read = False # Mark as unread for the user after admin replies
+        message.save()
+
+        # You might want to return the updated message data
+        serializer = self.get_serializer(message) # Use the serializer to return updated data
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+class UserContactMessageListView(generics.ListAPIView):
+    """
+    Lists contact messages sent by the current authenticated user,
+    including any admin replies.
+    """
+    serializer_class = ContactMessageSerializer
+    permission_classes = [permissions.AllowAny] # Only authenticated users can see their messages
+
+    def get_queryset(self):
+        # Filter messages to only show those sent by the current user
+        # .order_by('-sent_at') ensures the newest messages appear first
+        return ContactMessage.objects.filter(user=self.request.user).order_by('-sent_at')
+
+class UserContactMessageDetailView(generics.RetrieveDestroyAPIView):
+    queryset = ContactMessage.objects.all()
+    serializer_class = ContactMessageSerializer
+    permission_classes = [permissions.AllowAny]
+
+    def get_queryset(self):
+        # Ensure users can only delete their own messages
+        return ContactMessage.objects.filter(user=self.request.user)
+    
+@api_view(['GET'])
+@permission_classes([IsAuthenticated]) # Ensure only authenticated users can get their own count
+def get_request_count(request):
+    """
+    Returns the request count for the currently authenticated user.
+    """
+    return Response({'requestCount': request.user.request_count}, status=status.HTTP_200_OK)

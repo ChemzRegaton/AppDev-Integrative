@@ -1,5 +1,6 @@
 # library_app/views.py
 from rest_framework import generics, serializers, permissions, views, status
+from rest_framework import views
 from rest_framework.response import Response
 from rest_framework.permissions import IsAdminUser, IsAuthenticated, AllowAny
 from rest_framework.decorators import api_view, permission_classes
@@ -11,7 +12,9 @@ from django.conf import settings
 import logging
 from rest_framework.views import APIView
 from channels.layers import get_channel_layer
+from rest_framework import generics
 import asyncio
+from django.db import transaction
 import json
 from .models import Book, Request, BorrowingRecord, BorrowRequest, Notification, Message
 from .serializers import (
@@ -21,7 +24,6 @@ from .serializers import (
     BorrowingRecordSerializer,
     BorrowRequestSerializer,
     NotificationSerializer,
-    AdminReplyInputSerializer               
 )
 from django.core.mail import send_mail
 
@@ -106,36 +108,42 @@ class DeleteBookByJSONView(views.APIView):
 class RequestListCreateView(generics.ListCreateAPIView):
     queryset = BorrowRequest.objects.all()
     serializer_class = BorrowRequestSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
-        # Save the user making the request
-        borrow_request = serializer.save(user=self.request.user)
-
-        # Update the profile picture (existing logic)
-        borrow_request.requester_profile_picture = (
-            self.request.user.profile_picture.url
-            if self.request.user.profile_picture
-            else None
-        )
-        borrow_request.save()
-
-        # ★ Increment this user's request_count in the DB ★
         user = self.request.user
-        user.request_count = F('request_count') + 1
-        user.save(update_fields=['request_count'])
+        
+        # Use a transaction to ensure both the BorrowRequest creation
+        # and the user's request_count increment are atomic.
+        # This means either both succeed or both fail, preventing inconsistencies.
+        with transaction.atomic():
+            # 1. Save the BorrowRequest, linking it to the current user.
+            borrow_request = serializer.save(user=user)
 
+            # 2. Increment the user's request_count.
+            user.request_count += 1
+            user.save(update_fields=['request_count']) # Use update_fields for efficiency
+
+            # 3. Handle the requester_profile_picture for the BorrowRequest.
+            #    Access the profile_picture directly from the user object.
+            borrow_request.requester_profile_picture = (
+                user.profile_picture.url if user.profile_picture else None
+            )
+            borrow_request.save(update_fields=['requester_profile_picture']) # Save this specific field
+
+        print(f"User {user.username} (ID: {user.id}) created a new borrow request.")
+        print(f"User's request_count incremented to {user.request_count}.")
 
     def get_queryset(self):
         """
-        Optionally filter the queryset based on the current user.
+        Filters the queryset: admins see all requests, regular users only see their own.
         """
         user = self.request.user
-        if user.is_staff:
-            return BorrowRequest.objects.all()  # Admins see all requests
+        if user.is_staff: # Assuming 'is_staff' indicates an admin user
+            return BorrowRequest.objects.all().order_by('-request_date') # Order by newest first
         else:
-            return BorrowRequest.objects.filter(user=user) # Users only see their own requests
-
+            return BorrowRequest.objects.filter(user=user).order_by('-request_date') # Order by newest first
+        
 class BorrowRequestCreateView(generics.CreateAPIView):
     queryset = BorrowRequest.objects.all()
     serializer_class = BorrowRequestSerializer
@@ -222,65 +230,41 @@ class NotificationDeleteView(generics.DestroyAPIView):
         return Notification.objects.filter(user=self.request.user)
 
 
-class BorrowingRecordReturnView(views.APIView):
-    permission_classes = [AllowAny]
+class BorrowingRecordReturnView(generics.UpdateAPIView):
+    queryset = BorrowingRecord.objects.filter(is_returned=False)
+    serializer_class = BorrowingRecordSerializer
+    permission_classes = [IsAuthenticated, AllowAny]
+    lookup_field = 'pk'
 
-    def patch(self, request, pk):
-        try:
-            borrowing_record = get_object_or_404(BorrowingRecord, pk=pk)
+    def patch(self, request, *args, **kwargs):
+        borrowing_record = self.get_object()
+        user = borrowing_record.user
+        book = borrowing_record.book
 
-            if borrowing_record.is_returned:
-                return Response(
-                    {'error': 'This book has already been marked as returned.'},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
+        if borrowing_record.is_returned:
+            return Response({"message": "This book has already been returned."}, status=status.HTTP_400_BAD_REQUEST)
 
-            # --- your existing return logic ---
-            due_date = borrowing_record.return_date
+        with transaction.atomic():
+            # Correct the assignment to the actual model field name: 'return_date'
+            borrowing_record.return_date = timezone.now() # <-- FIX IS HERE
             borrowing_record.is_returned = True
-            borrowing_record.return_date = timezone.now()
-            borrowing_record.save()
-            borrowing_record.book.available_quantity += 1
-            borrowing_record.book.save()
+            # Correct the update_fields to use the actual model field name: 'return_date'
+            borrowing_record.save(update_fields=['return_date', 'is_returned']) # <-- FIX IS HERE
 
-            # Create notification (existing)
-            time_difference = borrowing_record.return_date - due_date
-            if time_difference.days > 0:
-                return_status = f"{time_difference.days} day{'s' if time_difference.days > 1 else ''} overdue"
-            elif time_difference.days < 0:
-                days_advanced = abs(time_difference.days)
-                return_status = f"returned {days_advanced} day{'s' if days_advanced > 1 else ''} in advance"
+            # Increment the book's available quantity
+            book.available_quantity += 1
+            book.save(update_fields=['available_quantity'])
+
+            # Decrement the user's request_count if it's greater than 0
+            if user.request_count > 0:
+                user.request_count -= 1
+                user.save(update_fields=['request_count'])
+                print(f"User {user.username}'s request_count decremented to {user.request_count}")
             else:
-                return_status = "returned on the due date"
+                print(f"User {user.username}'s request_count was already 0, not decremented.")
 
-            Notification.objects.create(
-                user=borrowing_record.user,
-                message=(
-                    f"The book '{borrowing_record.book.title}' you borrowed has "
-                    f"been marked as returned and was {return_status}."
-                ),
-                status='returned'
-            )
-
-            # ★ Decrement this user’s request_count (but never below zero) ★
-            user = borrowing_record.user
-            # Use F expression, then reload:
-            user.request_count = F('request_count') - 1
-            user.save(update_fields=['request_count'])
-            # optional: force refresh from DB so next reads are correct
-            user.refresh_from_db(fields=['request_count'])
-
-            return Response(
-                {'message': f"Borrow record {pk} marked as returned. The book was {return_status}."},
-                status=status.HTTP_200_OK
-            )
-
-        except Exception as e:
-            return Response(
-                {'error': f'Error processing return request: {e}'},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
-                
+        return Response({"message": "Book successfully marked as returned and counts updated."}, status=status.HTTP_200_OK)
+                            
 class ReturnedBorrowingRecordListView(generics.ListAPIView):
     serializer_class = BorrowingRecordSerializer
     permission_classes = [IsAdminUser]  # Adjust permissions as needed
@@ -290,25 +274,18 @@ class ReturnedBorrowingRecordListView(generics.ListAPIView):
                         
 class BorrowingRecordListView(generics.ListAPIView):
     queryset = BorrowingRecord.objects.select_related('user', 'book').all()
-    serializer_class = BorrowingRecordSerializer
+    serializer_class = BorrowingRecordSerializer # <--- Use the serializer!
     permission_classes = [IsAdminUser] # Adjust permission as needed
 
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
         serializer = self.get_serializer(queryset, many=True)
-        borrowing_records_data = []
-        for record in serializer.data:
-            borrowing_records_data.append({
-                'id': record['id'],
-                'user': record['user'], # Assuming your serializer returns the username directly or adjust accordingly
-                'book_title': record['book_title'], # Assuming your serializer has book_title
-                'book_id': record['book'], # Assuming your serializer has book ID
-                'borrow_date': record['borrow_date'],
-                'return_date': record['return_date'],
-                'is_returned': record['is_returned'],
-            })
-        return Response({'borrowingRecords': borrowing_records_data})
-
+        # Simply return the serializer's data directly
+        total_borrowed_count = BorrowingRecord.objects.filter(is_returned=False).count() # Changed to count only active borrows
+        return Response({
+            'totalBorrowedRecords': total_borrowed_count,
+            'borrowingRecords': serializer.data, # <--- Return serializer.data directly
+        })        
 class UnreadNotificationCountView(views.APIView):
     permission_classes = [permissions.IsAuthenticated]
 
@@ -476,42 +453,36 @@ class NotificationListView(generics.ListAPIView):
     def get_queryset(self):
         return Notification.objects.filter(user=self.request.user).order_by('-created_at')
 
-class AdminMessageReplyView(views.APIView):
-    """
-    API view for admin users to reply to user messages.
-    Creates a new Notification for the original sender.
-    """
-    permission_classes = [IsAdminUser]
-
+class AdminMessageReplyView(APIView):
     def post(self, request, message_id):
-        # Get the original Message object the admin is replying to
-        original_message = get_object_or_404(Message, id=message_id)
+        # Retrieve the original notification (acting as the message)
+        try:
+            notification = Notification.objects.get(id=message_id)
+        except Notification.DoesNotExist:
+            return Response({'error': 'Notification not found.'}, status=status.HTTP_404_NOT_FOUND)
 
-        # Use the AdminReplyInputSerializer for validation of the reply content
-        serializer = AdminReplyInputSerializer(data=request.data)
-
+        # Serialize the reply message
+        serializer = ReplySerializer(data=request.data)
         if serializer.is_valid():
-            reply_content = serializer.validated_data['content']
+            reply_message = serializer.validated_data['reply_message']
 
-            # Create a new Notification for the user who sent the original message
-            Notification.objects.create(
-                user=original_message.sender,  # Send the notification to the user who sent the original message
-                message=f"Admin replied to your message: \"{reply_content}\"",
-                status='admin_reply',  # A distinct status for admin replies
-                # If you have a 'book' field in Notification and the message is book-related,
-                # you might link it here: book=original_message.book (if Message has a book field)
+            # Create a new notification for the reply
+            new_notification = Notification.objects.create(
+                message=reply_message,  # This is the reply message
+                book=None,  # Adjust based on your requirements (e.g., associated book or other info)
+                status='replied',  # Adjust status as needed
+                created_at=timezone.now(),  # Automatically uses current time
+                user=notification.user,  # Send reply to the user who initially sent the notification
+                reply_message=reply_message  # Store the reply in the Notification
             )
 
-            # Optional: Mark the original message as replied to for admin tracking
-            # You would need to add an 'is_replied' or 'status' field to your Message model
-            # original_message.status = 'replied'
-            # original_message.save()
+            # Optionally, you can mark the original notification as 'replied' or handle its status if needed
+            notification.status = 'replied'
+            notification.save()
 
-            return Response(
-                {'success': 'Reply sent successfully! User has been notified.'},
-                status=status.HTTP_201_CREATED
-            )
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'success': 'Reply sent successfully!', 'notification_id': new_notification.id}, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET'])
 def get_api_base_url(request):
@@ -552,57 +523,12 @@ def user_request_count(request):
     return Response({'request_count': active_requests})
 
 @api_view(['POST'])
-@permission_classes([IsAdminUser]) # Only allow admins to send replies
-def reply_to_message(request, message_id):
-    # Get the original Message object the admin is replying to
-    # The 'message_id' in the URL should correspond to the ID of the Message model
-    original_message = get_object_or_404(Message, id=message_id)
-
-    # Use the new serializer for validation of the reply content
-    serializer = AdminReplyInputSerializer(data=request.data)
-    if serializer.is_valid():
-        reply_content = serializer.validated_data['content']
-
-        # Create a new Notification for the user who sent the original message
-        Notification.objects.create(
-            user=original_message.sender, # Send the notification to the user who sent the original message
-            message=f"Admin replied to your message: \"{reply_content}\"",
-            status='admin_reply', # A distinct status for admin replies
-            # Optionally, if you want to explicitly store the reply in the `reply_message` field
-            # reply_message=reply_content,
-            # book=None, # Or link to a book if the message was about a specific book
-        )
-
-        # Optional: Mark the original message as replied to, if needed for admin tracking
-        # original_message.is_replied = True # You might need to add this field to your Message model
-        # original_message.save()
-
-        return Response(
-            {'success': 'Reply sent successfully! User has been notified.'},
-            status=status.HTTP_201_CREATED
-        )
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-# library_app/views.py (near the bottom)
-
-@api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def get_user_request_count(request):
-    """
-    Return the up‐to‐date request_count on the current user.
-    """
-    return Response({'request_count': request.user.request_count})
+def reply_to_message(request, message_id):
+    message = get_object_or_404(Message, id=message_id)
 
-
-@api_view(['PATCH'])
-@permission_classes([IsAdminUser])
-def reset_user_request_count(request, user_id):
-    CustomUser = get_user_model()
-    try:
-        user = CustomUser.objects.get(pk=user_id)
-        user.request_count = 0
-        user.save()
-        return Response({'message': f'Request count for {user.username} has been reset.'}, status=status.HTTP_200_OK)
-    except CustomUser.DoesNotExist:
-        return Response({'error': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
-    except Exception as e:
-        return Response({'error': f'Error resetting request count: {e}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    serializer = ReplySerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save(responder=request.user, message=message)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

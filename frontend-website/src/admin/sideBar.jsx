@@ -9,17 +9,6 @@
 
     return (
       <div className="sidebar">
-        <section
-                style={{
-                  backgroundImage: `url(${logoImage})`,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                  height: '22vh',
-                  width: '20vh',
-                  display: 'flex',
-        
-                }}
-              ></section>
         <ul>
           <li 
             onClick={() => navigate('/admin')}

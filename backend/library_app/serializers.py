@@ -1,7 +1,7 @@
 # library_app/serializers.py
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import Book, Request, BorrowingRecord, BorrowRequest, Notification
+from .models import Book, Request, BorrowingRecord, BorrowRequest, Notification, Message
 from auth_app.models import CustomUser 
 from .models import Reply
 
@@ -55,37 +55,50 @@ class RequestSerializer(serializers.ModelSerializer):
         read_only_fields = ['request_date', 'borrow_date', 'return_date', 'user'] # 'user' should be read-only on create
 
 class BorrowingRecordSerializer(serializers.ModelSerializer):
-    user = serializers.ReadOnlyField(source='user.username') # Display username, not user ID
-    book_title = serializers.ReadOnlyField(source='book.title') # Display book title
+    user = serializers.CharField(source='user.username', read_only=True) # To display username instead of ID
+    book_title = serializers.CharField(source='book.title', read_only=True) # To display book title
+    book_id = serializers.CharField(source='book.book_id', read_only=True) # To display book_id
+    due_date = serializers.DateTimeField(read_only=True) # <--- ADD THIS LINE!
 
     class Meta:
         model = BorrowingRecord
-        fields = '__all__'
-        read_only_fields = ['borrow_date', 'return_date', 'is_returned']
-
+        fields = ['id', 'user', 'book_title', 'book_id', 'borrow_date', 'return_date', 'is_returned', 'due_date']
+        
 class NotificationSerializer(serializers.ModelSerializer):
     book_title = serializers.SerializerMethodField()
-    reply_message = serializers.CharField(required=False, allow_blank=True)
+    # 'status' is the field name in your Notification model, based on current consolidated model
+    # If you renamed it to 'notification_type' in the model, change 'status' here too.
 
     class Meta:
         model = Notification
-        fields = ['id', 'message', 'book', 'book_title', 'status', 'created_at', 'reply_message']
-        read_only_fields = ['id', 'created_at']
+        # Ensure 'book' is here, and 'status' (or 'notification_type')
+        fields = ['id', 'user', 'message', 'book', 'book_title', 'status', 'created_at', 'is_read']
+        read_only_fields = ['id', 'user', 'created_at']
 
     def get_book_title(self, obj):
         return obj.book.title if obj.book else None
 
+class MessageSerializer(serializers.ModelSerializer):
+    sender_info = serializers.PrimaryKeyRelatedField(read_only=True, source='sender.userId')
+    recipient_info = serializers.PrimaryKeyRelatedField(read_only=True, source='recipient.userId')
+    # If you want to display more than just ID, use nested serializers or specific fields
 
-class AdminReplyInputSerializer(serializers.Serializer):
-    """
-    A serializer to validate the content of an admin's reply.
-    """
-    content = serializers.CharField(max_length=1000) # Ensure you have a max_length suitable for replies
+    class Meta:
+        model = Message
+        fields = ['id', 'sender', 'recipient', 'content', 'sent_at', 'sender_info', 'recipient_info']
+        read_only_fields = ['id', 'sent_at', 'sender_info', 'recipient_info']
+    
 
 class ReplySerializer(serializers.ModelSerializer):
+    # Use 'original_message' if you changed the field name in the Reply model
+    original_message = serializers.PrimaryKeyRelatedField(queryset=Message.objects.all())
+    # Assuming 'responder' is a ForeignKey to CustomUser
+    responder_info = serializers.PrimaryKeyRelatedField(read_only=True, source='responder.userId')
+
+
     class Meta:
         model = Reply
-        fields = ['id', 'message', 'responder', 'content', 'created_at']
-        read_only_fields = ['id', 'responder', 'created_at']
-
+        # Adjust fields to match your updated model
+        fields = ['id', 'original_message', 'responder', 'responder_info', 'content', 'sent_at']
+        read_only_fields = ['id', 'responder_info', 'sent_at']
 

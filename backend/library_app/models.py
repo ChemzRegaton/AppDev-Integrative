@@ -64,12 +64,19 @@ class BorrowingRecord(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
     borrow_date = models.DateTimeField(auto_now_add=True)
-    return_date = models.DateTimeField(null=True, blank=True)
+    return_date = models.DateTimeField(null=True, blank=True) # Actual return date
     is_returned = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.user.username} borrowed '{self.book.title}' on {self.borrow_date}"
-    
+
+    @property
+    def due_date(self):
+        """Calculates the due date (e.g., 10 days after borrow_date)."""
+        if self.borrow_date:
+            return self.borrow_date + timezone.timedelta(days=10)
+        return None
+        
 class BorrowRequest(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
@@ -103,17 +110,29 @@ class UserProfile(models.Model):
 class Notification(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     message = models.TextField()
-    book = models.ForeignKey(Book, on_delete=models.SET_NULL, null=True, blank=True)
-    status = models.CharField(max_length=20, blank=True, null=True, choices=[
-        ('pending', 'Pending'),
-        ('accepted', 'Accepted'),
-        ('rejected', 'Rejected'),
-    ])
+    book = models.ForeignKey(
+        Book,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
+    )
+    status = models.CharField( # Or 'notification_type' if you changed it in the model
+        max_length=50,
+        blank=True,
+        null=True,
+        choices=[
+            ('accepted', 'Accepted'),
+            ('rejected', 'Rejected'),
+            ('returned', 'Returned'),
+            ('overdue_reminder', 'Overdue Reminder'),
+            ('general', 'General'),
+        ]
+    )
     created_at = models.DateTimeField(auto_now_add=True)
+    is_read = models.BooleanField(default=False) # Keep this for tracking read status
 
     def __str__(self):
-        return f"Notification for {self.user.username}: {self.message}"
-
+        return f"Notification for {self.user.username}: {self.message[:50]}"    
 class AdminActionLog(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     admin_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name='admin_logs')
@@ -121,18 +140,7 @@ class AdminActionLog(models.Model):
     details = models.TextField(blank=True, null=True)
 
     def __str__(self):
-        return f"{self.timestamp} - {self.admin_user} - {self.action}"
-    
-class Notification(models.Model):
-    message = models.TextField()
-    status = models.CharField(max_length=20)
-    created_at = models.DateTimeField(auto_now_add=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    reply_message = models.TextField(blank=True, null=True)
-
-    def __str__(self):
-        return f"Notification: {self.message[:50]}"
-    
+        return f"{self.timestamp} - {self.admin_user} - {self.action}"    
 
 class Reply(models.Model):
     message = models.ForeignKey('library_app.Message', on_delete=models.CASCADE, related_name='replies')

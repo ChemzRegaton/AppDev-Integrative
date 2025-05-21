@@ -54,16 +54,14 @@ class BookBorrowing(models.Model):
 
 class ContactMessage(models.Model):
     user = models.ForeignKey(
-        settings.AUTH_USER_MODEL, # Prefer settings.AUTH_USER_MODEL for consistency
+        CustomUser,
         on_delete=models.CASCADE,
-        related_name='contact_messages' # This is the unique related_name
+        related_name='contact_messages'
     )
     subject = models.CharField(max_length=255)
-    content = models.TextField() # Keeping this field name for consistency with your last definition
+    content = models.TextField() # <--- Notice this field name!
     sent_at = models.DateTimeField(default=timezone.now)
     is_read = models.BooleanField(default=False)
     response = models.TextField(blank=True, null=True)
     responded_at = models.DateTimeField(blank=True, null=True)
-
-    def __str__(self):
-        return f"Message from {self.user.username} - {self.subject}"
+    # ... other fields

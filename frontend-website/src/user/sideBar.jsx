@@ -9,15 +9,6 @@ const Sidebar = () => {
 
   return (
     <div className="sidebar">
-      <section
-              style={{
-                backgroundImage: `url(${logoImage})`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                height: '40vh',
-                width: '30vh' 
-              }}
-            ></section>
       <ul>
         <li 
           onClick={() => navigate('/user')}

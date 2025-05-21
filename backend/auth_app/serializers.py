@@ -114,7 +114,7 @@ class UserWithBorrowCountSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'fullname', 'role', 'studentId', 'age', 'course', 'birthdate', 'address', 'contactNumber', 'borrowed_count']
+        fields = ['id', 'username', 'email', 'fullname', 'role', 'request_count', 'studentId', 'age', 'course', 'birthdate', 'address', 'contactNumber', 'borrowed_count']
 
     def get_borrowed_count(self, user):
         """
@@ -128,9 +128,9 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['id', 'username'] # Include relevant user details
 
 class ContactMessageSerializer(serializers.ModelSerializer):
-    user = UserSerializer(read_only=True) # Display user details, but don't allow modification
+    user = UserSerializer(read_only=True)
 
     class Meta:
         model = ContactMessage
-        fields = ['id', 'user', 'subject', 'message', 'sent_at', 'is_read', 'response', 'responded_at']
-        read_only_fields = ['id', 'user', 'sent_at', 'is_read', 'response', 'responded_at'] # These fields should not be directly modified during creation
+        fields = ['id', 'user', 'subject', 'content', 'sent_at', 'is_read', 'response', 'responded_at']
+        read_only_fields = ['id', 'user', 'sent_at', 'is_read', 'response', 'responded_at']
