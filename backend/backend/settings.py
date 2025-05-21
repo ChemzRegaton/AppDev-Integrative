@@ -29,7 +29,7 @@ MEDIA_URL = '/media/'
 
 SECRET_KEY = 'django-insecure-5aa&95wd8!rvgjr15k33@+cl-q+(v=^=!d6e_*60f01xnqdsz1'
 DEBUG = True
-ALLOWED_HOSTS = ['192.168.33.92']
+ALLOWED_HOSTS = ['192.168.33.92', 'library-management-system-3qap.onrender.com']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
