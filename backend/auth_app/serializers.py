@@ -132,5 +132,5 @@ class ContactMessageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ContactMessage
-        fields = ['id', 'user', 'subject', 'content', 'sent_at', 'is_read', 'response', 'responded_at']
+        fields = ['id', 'user', 'subject', 'content', 'sent_at', 'is_read', 'response', 'responded_at', 'is_read_by_user']
         read_only_fields = ['id', 'user', 'sent_at', 'is_read', 'response', 'responded_at']

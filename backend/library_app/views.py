@@ -31,6 +31,7 @@ logger = logging.getLogger(__name__)
 
 
 class BookListCreateView(generics.ListCreateAPIView):
+    permission_classes = [permissions.AllowAny] 
     queryset = Book.objects.all()
     serializer_class = BookSerializer
 
@@ -210,7 +211,8 @@ class AcceptRequestView(generics.UpdateAPIView):
         Notification.objects.create(
             user=borrow_request.user,
             message=f"Your request for the book '{book.title}' has been accepted. Your return date is {formatted_return_date}.",
-            status='accepted'
+            notification_type='borrow_accepted', # <--- Add this for clarity and consistency
+            status='accepted' # <--- This field was present in your original code
         )
         logger.info(f"NOTIFICATION CREATED in update for user: {user.username}, book: {book.title}")
 
@@ -220,7 +222,7 @@ class AcceptRequestView(generics.UpdateAPIView):
             "book_detail": book_serializer.data,
             "borrowing_record": borrowing_record_serializer,
         }
-        return Response(response_data)        
+        return Response(response_data)         
 class NotificationDeleteView(generics.DestroyAPIView):
     queryset = Notification.objects.all()
     serializer_class = NotificationSerializer
@@ -233,7 +235,10 @@ class NotificationDeleteView(generics.DestroyAPIView):
 class BorrowingRecordReturnView(generics.UpdateAPIView):
     queryset = BorrowingRecord.objects.filter(is_returned=False)
     serializer_class = BorrowingRecordSerializer
-    permission_classes = [IsAuthenticated, AllowAny]
+    # IMPORTANT: Reconsider using AllowAny for return.
+    # It's usually `IsAuthenticated` for admins/librarians.
+    # If this is for testing, it's fine, but secure it in production.
+    permission_classes = [IsAuthenticated, AllowAny] 
     lookup_field = 'pk'
 
     def patch(self, request, *args, **kwargs):
@@ -245,17 +250,13 @@ class BorrowingRecordReturnView(generics.UpdateAPIView):
             return Response({"message": "This book has already been returned."}, status=status.HTTP_400_BAD_REQUEST)
 
         with transaction.atomic():
-            # Correct the assignment to the actual model field name: 'return_date'
-            borrowing_record.return_date = timezone.now() # <-- FIX IS HERE
+            borrowing_record.return_date = timezone.now()
             borrowing_record.is_returned = True
-            # Correct the update_fields to use the actual model field name: 'return_date'
-            borrowing_record.save(update_fields=['return_date', 'is_returned']) # <-- FIX IS HERE
+            borrowing_record.save(update_fields=['return_date', 'is_returned'])
 
-            # Increment the book's available quantity
             book.available_quantity += 1
             book.save(update_fields=['available_quantity'])
 
-            # Decrement the user's request_count if it's greater than 0
             if user.request_count > 0:
                 user.request_count -= 1
                 user.save(update_fields=['request_count'])
@@ -263,15 +264,29 @@ class BorrowingRecordReturnView(generics.UpdateAPIView):
             else:
                 print(f"User {user.username}'s request_count was already 0, not decremented.")
 
+            # --- MODIFIED: ADD 'status' FIELD AND ENSURE 'notification_type' IS SET ---
+            try:
+                Notification.objects.create(
+                    user=user,
+                    # Remove notification_type entirely, and rely on 'status'
+                    message=f"The book '{book.title}' has been successfully returned to the library.",
+                    book=book, # It's good to link the book if your model allows it
+                    created_at=timezone.now(),
+                    status='returned' # <--- USE THE 'status' FIELD HERE
+                )
+                print(f"Notification created for user {user.username}: book '{book.title}' returned (Status: returned).")
+            except Exception as e:
+                print(f"ERROR creating 'book_returned' notification for user {user.username}: {e}")
+
         return Response({"message": "Book successfully marked as returned and counts updated."}, status=status.HTTP_200_OK)
-                            
+                                
 class ReturnedBorrowingRecordListView(generics.ListAPIView):
     serializer_class = BorrowingRecordSerializer
     permission_classes = [IsAdminUser]  # Adjust permissions as needed
 
     def get_queryset(self):
         return BorrowingRecord.objects.filter(is_returned=True).select_related('user', 'book')
-                        
+                                
 class BorrowingRecordListView(generics.ListAPIView):
     queryset = BorrowingRecord.objects.select_related('user', 'book').all()
     serializer_class = BorrowingRecordSerializer # <--- Use the serializer!
@@ -285,7 +300,7 @@ class BorrowingRecordListView(generics.ListAPIView):
         return Response({
             'totalBorrowedRecords': total_borrowed_count,
             'borrowingRecords': serializer.data, # <--- Return serializer.data directly
-        })        
+        })         
 class UnreadNotificationCountView(views.APIView):
     permission_classes = [permissions.IsAuthenticated]
 
@@ -473,8 +488,12 @@ class AdminMessageReplyView(APIView):
                 status='replied',  # Adjust status as needed
                 created_at=timezone.now(),  # Automatically uses current time
                 user=notification.user,  # Send reply to the user who initially sent the notification
-                reply_message=reply_message  # Store the reply in the Notification
+                reply_message=reply_message,  # Store the reply in the Notification
+                # is_read_by_user = models.BooleanField(default=False) # <--- This line is problematic here
             )
+            # You need to import `models` from django.db if you uncomment the line above
+            # For setting a default, it should be in the model definition, not here.
+            # If you mean to set it to False, just add: is_read_by_user=False
 
             # Optionally, you can mark the original notification as 'replied' or handle its status if needed
             notification.status = 'replied'
@@ -513,7 +532,7 @@ def get_active_request_count(request):
     count = BorrowRequest.objects.filter(user=user, status__in=['pending', 'approved']).count()
     return Response({'active_request_count': count})
 
-from .models import BorrowRequest
+# from .models import BorrowRequest # Already imported
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])

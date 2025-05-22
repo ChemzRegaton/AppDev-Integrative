@@ -157,6 +157,8 @@ class Message(models.Model):
     recipient = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='received_messages')
     content = models.TextField()
     sent_at = models.DateTimeField(auto_now_add=True)
+    is_read_by_user = models.BooleanField(default=False)
+    
 
     def __str__(self):
         return f"From {self.sender.username} to {self.recipient.username} - {self.sent_at}"

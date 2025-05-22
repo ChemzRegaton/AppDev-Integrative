@@ -29,7 +29,7 @@ MEDIA_URL = '/media/'
 
 SECRET_KEY = 'django-insecure-5aa&95wd8!rvgjr15k33@+cl-q+(v=^=!d6e_*60f01xnqdsz1'
 DEBUG = True
-ALLOWED_HOSTS = ['192.168.33.92', 'library-management-system-3qap.onrender.com']
+ALLOWED_HOSTS = ['192.168.187.92', 'localhost']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -62,6 +62,9 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
         'rest_framework.authentication.TokenAuthentication',
         'rest_framework.authentication.SessionAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated', # Consider setting this globally if most views require auth
     ],
 }
 

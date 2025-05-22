@@ -64,4 +64,5 @@ class ContactMessage(models.Model):
     is_read = models.BooleanField(default=False)
     response = models.TextField(blank=True, null=True)
     responded_at = models.DateTimeField(blank=True, null=True)
+    is_read_by_user = models.BooleanField(default=False)
     # ... other fields

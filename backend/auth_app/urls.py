@@ -1,6 +1,13 @@
 # auth_app/urls.py
 from django.urls import path, include
-from .views import RegistrationView, LoginView, UserProfileUpdateView, get_request_count, UserProfileListView, UserContactMessageDetailView, UserContactMessageListView, AdminUnreadMessagesCountView, AdminMessageReplyView, UserDeleteView, UploadProfilePictureView, UsersWithBorrowCountListView, UpdateProfileView, SendMessageToAdminView, AdminReceiveMessagesView, AdminMessageDetailView
+from .views import (
+    RegistrationView, LoginView, UserProfileUpdateView, get_request_count,
+    UserProfileListView, UserContactMessageDetailView, UserContactMessageListView,
+    AdminUnreadMessagesCountView, AdminMessageReplyView, UserDeleteView,
+    UploadProfilePictureView, UsersWithBorrowCountListView, UpdateProfileView,
+    SendMessageToAdminView, AdminReceiveMessagesView, AdminMessageDetailView,
+    mark_messages_as_read_by_user # Import the new view
+)
 
 urlpatterns = [
     path('register/', RegistrationView.as_view(), name='register'),
@@ -18,5 +25,6 @@ urlpatterns = [
     path('admin/messages/<int:pk>/reply/', AdminMessageReplyView.as_view(), name='admin_message_reply'),
     path('messages/user/', UserContactMessageListView.as_view(), name='user-messages'),
     path('messages/<int:pk>/', UserContactMessageDetailView.as_view(), name='user-message-detail'),
+    path('messages/mark_as_read/', mark_messages_as_read_by_user, name='mark-messages-as-read'), # New URL
     path('user/request-count/', get_request_count, name='get_request_count'),
 ]
