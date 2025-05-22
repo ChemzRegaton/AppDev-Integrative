@@ -210,8 +210,7 @@ class AcceptRequestView(generics.UpdateAPIView):
         
         Notification.objects.create(
             user=borrow_request.user,
-            message=f"Your request for the book '{book.title}' has been accepted. Your return date is {formatted_return_date}.",
-            notification_type='borrow_accepted', # <--- Add this for clarity and consistency
+            message=f"Your request for the book '{book.title}' has been accepted. Your return date is {formatted_return_date}.", # <--- Add this for clarity and consistency
             status='accepted' # <--- This field was present in your original code
         )
         logger.info(f"NOTIFICATION CREATED in update for user: {user.username}, book: {book.title}")
