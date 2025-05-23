@@ -31,6 +31,14 @@ SECRET_KEY = 'django-insecure-5aa&95wd8!rvgjr15k33@+cl-q+(v=^=!d6e_*60f01xnqdsz1
 DEBUG = True
 ALLOWED_HOSTS = ['192.168.187.92', 'localhost', 'library-management-system-3qap.onrender.com']
 
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+USE_X_FORWARDED_HOST = True
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://library-management-system-3qap.onrender.com',
+    # Add other trusted origins if you have a custom domain for your website
+]
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -76,6 +84,7 @@ ROOT_URLCONF = 'backend.urls'
 CORS_ALLOW_ALL_ORIGINS = True
 AUTH_USER_MODEL = 'auth_app.CustomUser'
 CORS_ALLOWED_ORIGINS = [
+    "https://library-management-system-3qap.onrender.com",
     "http://localhost:8000",
     "http://10.0.2.2:8081",
     "http://localhost:5173",
