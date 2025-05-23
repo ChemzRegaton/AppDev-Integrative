@@ -20,6 +20,7 @@ from .serializers import (
 User = get_user_model()
 
 class RegistrationView(APIView):
+    permission_classes = [AllowAny]
     """
     Handles user registration.
     - POST: Creates a new user and returns a token.
